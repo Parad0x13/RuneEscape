@@ -1,0 +1,99 @@
+#include Box
+#include ExtraTools/OCR/GDIp.ahk
+#include Settings
+
+global tmp_loc := A_AppData . "/RuneEscape/tmp.png"
+
+calibrate_initialize()
+calibrate_initialize() {
+	nonCalibratedCount := 0
+
+	for index, item in calibratables {
+		image_loc := A_AppData . "/RuneEscape/" . item . ".png"
+		IfNotExist %image_loc%
+		{
+			nonCalibratedCount := nonCalibratedCount + 1
+		}
+	}
+
+	term := "resource"
+	if(nonCalibratedCount > 1)
+		term := "resources"
+	if(nonCalibratedCount > 0)
+		MsgBox [Warning] You have %nonCalibratedCount% uncalibrated %term%
+}
+
+calibrate(item) {
+	Box_Init()
+	CoordMode Mouse, Screen
+	isDrawing := 0
+	downXLoc := 0
+	downYLoc := 0
+
+	MsgBox Oh No! A required resource is not yet calibrated!`n`nDraw a rectangle to calibrate %item%`n`nPress Esc to cancel
+
+	Loop {
+		if(isDrawing) {
+			MouseGetPos x, y
+			Box_Draw(downXLoc, downYLoc, x-downXLoc, y-downYLoc)
+		}
+
+		if(GetKeyState("LShift", "P")) {
+			if(!isDrawing) {
+				MouseGetPos x, y
+				downXLoc := x
+				downYLoc := y
+			}
+
+			isDrawing := 1
+		}
+		else {
+			if(isDrawing) {
+				MouseGetPos x, y
+				success := ableToProcessRectangle(downXLoc, downYLoc, x-downXLoc, y-downYLoc)
+				if(!success) {
+					FileDelete %tmp_loc%
+					calibrate(item)
+				}
+				else {
+					FileMove %tmp_loc%, %A_AppData%/RuneEscape/%item%.png
+					return
+				}
+			}
+
+			isDrawing := 0
+			Box_Hide()
+		}
+
+		if(GetKeyState("Esc", "P")) {
+			MsgBox No longer trying to calibrate %item%
+			return
+		}
+
+		Sleep 10	; So as not to peg CPU
+	}
+}
+
+ableToProcessRectangle(x, y, w, h) {
+	Box_Hide()
+
+	; [TODO] Make it so reverse scans will work, currently they only render black
+
+	pToken:=Gdip_Startup()
+	pBitmap:=Gdip_BitmapFromScreen(x "|" y "|" w "|" h)
+	Gdip_SaveBitmapToFile(pBitmap, tmp_loc)
+	Gdip_Shutdown(pToken)
+
+	Gui, Add, Picture,, %tmp_loc%
+	Gui, Show,, Calibration Window
+
+	MsgBox 4,, Are you happy with this calibration?
+	Gui Destroy
+	IfMsgBox Yes
+	{
+		return 1
+	}
+	else {
+		return 0
+	}
+}

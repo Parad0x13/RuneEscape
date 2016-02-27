@@ -6,6 +6,10 @@ presentHUD() {
 	Gui, Show, x500 y200 h600 w800, %RuneEscapeVersion%
 	Gui, Add, Button, x690 y560 w100 h30 gRunPrimitive, Primitive Macros
 	Gui, Add, Picture, x668 y568 w16 h16 gRunPrimitiveHelp BackgroundTrans, resources\question.png
+
+	Gui, Add, Button, x690 y528 w100 h30 gTempFiles, Temp Files
+	Gui, Add, Picture, x668 y536 w16 h16 gTempFilesHelp BackgroundTrans, resources\question.png
+
 	Gui, Add, Button, x10 y20 w120 h40 gLaunchRunescape, Launch RuneScape
 	Gui, Add, Picture, x135 y31 w16 h16 gLaunchRunescapeHelp BackgroundTrans, resources\question.png
 	Gui, Add, Picture, x750 y10 w32 h32 gRunLocationData BackgroundTrans, resources\target.png
@@ -26,6 +30,14 @@ RunPrimitiveHelp() {
 	MsgBox Archive of old Runescape Bot that got me banned
 }
 
+TempFiles() {
+	Run %A_AppData%/RuneEscape/
+}
+
+TempFilesHelp() {
+	MsgBox Each machine has a dedicated set of images for calibration`n`nView and manage your data here
+}
+
 LaunchRunescape() {
 	Gui Destroy
 
@@ -40,7 +52,7 @@ LaunchRunescape() {
 	location .= "/jagexcache/jagexlauncher/bin/JagexLauncher.exe runescape"
 	Run %location%
 
-	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["TitleIndicator.png"])
+	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["TitleIndicator"])
 	WinMaximize RuneScape
 
 	StringLen length, password

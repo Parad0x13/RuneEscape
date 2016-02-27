@@ -1,5 +1,6 @@
 #include Settings
 #include MiscFunctions
+#include Calibrate
 
 ;	strength - how many times to try before giving up. It doesn't always find the first time
 findImage(x, y, image, strength) {
@@ -8,7 +9,15 @@ findImage(x, y, image, strength) {
 		MouseGetPos x, y
 	Loop %strength% {
 		MouseMove x, y, 3
-		ImageSearch, FoundX, FoundY, 0, 0, width, height, *1 resources/%image%
+
+		image_loc := A_AppData . "/RuneEscape/" . image . ".png"
+		IfNotExist %image_loc%
+		{
+			calibrate(image)
+			return findImage(x, y, image, strength)
+		}
+
+		ImageSearch, FoundX, FoundY, 0, 0, width, height, *1 %image_loc%
 		if ErrorLevel = 0
 			return true
 		else if ErrorLevel = 2

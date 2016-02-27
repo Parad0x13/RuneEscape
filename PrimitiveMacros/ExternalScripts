@@ -1,0 +1,38 @@
+killAllExternalScripts() {
+	killHealthScript()
+	killSpamSpecialAttackScript()
+	killAsyncMsgBoxScript()
+}
+
+startHealthScript() {
+	killHealthScript()
+	Run Health.ahk
+}
+
+killHealthScript() {
+	fullScriptPath = %A_WorkingDir%\Health.ahk
+	DetectHiddenWindows, On
+	WinClose, %fullScriptPath% ahk_class AutoHotkey
+}
+
+startSpamSpecialAttackScript() {
+	killSpamSpecialAttackScript()
+	Run SpamSpecialAttack.ahk
+}
+
+killSpamSpecialAttackScript() {
+	fullScriptPath = %A_WorkingDir%\SpamSpecialAttack.ahk
+	DetectHiddenWindows, On
+	WinClose, %fullScriptPath% ahk_class AutoHotkey
+}
+
+startAsyncMsgBox(message) {
+	killAsyncMsgBoxScript()
+	Run AsyncMsgBox.ahk "%message%"
+}
+
+killAsyncMsgBoxScript() {
+	fullScriptPath = %A_WorkingDir%\AsyncMsgBox.ahk
+	DetectHiddenWindows, On
+	WinClose, %fullScriptPath% ahk_class AutoHotkey
+}

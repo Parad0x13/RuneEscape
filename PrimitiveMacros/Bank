@@ -1,0 +1,93 @@
+#include Settings
+#include Camera
+#include MiscFunctions
+#include ImageManagement
+
+ensureAreInBank() {
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_BankOfRunescape.png"])
+}
+
+accessBankThroughTeleport() {
+	teleportToLodestone(var.Burthorpe)
+	deterministicallyFind([[var.RS_BurthorpeBankFromLodestoneX, var.RS_BurthorpeBankFromLodestoneY]], ["Text_BankBankBooth.png"])
+	Click
+	ensureAreInBank()
+}
+
+openBank(x, y, bankType) {
+	deterministicallyFind([[x, y]], [bankType])
+	Click
+	ensureAreInBank()
+}
+
+exitBank() {
+	MouseMove % var.RS_BankExitX, var.RS_BankExitY, 10
+	Click
+}
+
+;	Presumes you are in standard bank UI
+savePresetOne(bankX, bankY, bankType) {
+	deterministicallyFind([[var.RS_BankPresetSettingsX, var.RS_BankPresetSettingsY-100]], [var.RS_BankPresetSettingsIcon])
+	MouseMove 0, 100, 10, R
+	safeClick()
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], [var.RS_BankPresetsImage])
+	MouseMove % var.RS_BankPresetSettingsFirstPresetRadialButton1X, var.RS_BankPresetSettingsFirstPresetRadialButton1Y
+	safeClick()
+	deterministicallyFind([[var.RS_BankPresetSettingsFirstPresetSaveIconX, var.RS_BankPresetSettingsFirstPresetSaveIconY]], ["SavePresetIcon.png"])
+	safeClick()
+	; Make sure not to hover directly over the button since sometimes it highlights and sometimes it doesn't
+	; and this messes with the image detection function because sometimes the image is different than what it expects
+	deterministicallyFind([[var.RS_BankPresetSettingsSaveConfirmX, var.RS_BankPresetSettingsSaveConfirmY-25]], ["Text_Confirm.png"])
+	MouseMove % var.RS_BankPresetSettingsSaveConfirmX, var.RS_BankPresetSettingsSaveConfirmY
+	safeClick()
+	deterministicallyFind([[var.RS_BankPresetSettingsSaveConformCheckX, var.RS_BankPresetSettingsSaveConformCheckY+25]], ["Text_Yes.png"])
+	MouseMove % var.RS_BankPresetSettingsSaveConformCheckX, var.RS_BankPresetSettingsSaveConformCheckY
+	safeClick()
+	Click % var.RS_BankPresetSettingsExitX "," var.RS_BankPresetSettingsExitY
+	; Should be out of bank menu now. This is done because
+	; sometimes the menu dissapears and sometimes it doesn't
+	openBank(bankX, bankY, bankType)
+	inBankEmptyBackpack()
+}
+
+;	- Assumes you are already in bank menu
+withdrawBankItem(exactName, exactQuantity) {
+	deterministicallyFind([[var.RS_BankSearchX, var.RS_BankSearchY-100]], ["BankSearchIcon.png"])
+	MouseMove 0, 100, 10, R
+	safeClick()
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_EnterTheName.png"])
+	Sleep 250	; Menu doesn't always appear right away
+	Send %exactName%
+	;deterministicallyFind([[var.RS_BankSlotFirstX, var.RS_BankSlotFirstY]], ["Text_Withdraw.png"])
+	MouseMove % var.RS_BankSlotFirstX, var.RS_BankSlotFirstY
+	Sleep 1000	; Sometimes it glitches out and just needs time
+	menuSelect(5)
+	deterministicallyFind([[var.RS_BankSearchEnterAmountX, var.RS_BankSearchEnterAmountY]], ["Text_EnterAmount.png"])
+	Send %exactQuantity%
+	Sleep 200	; Sometimes it needs a bit of time
+	Send {Enter}
+	; Unfortunately the search icon stays depressed and so we have to fix that
+	; otherwise the next search for an item will fail : (
+	Click % var.RS_BankSearchX "," var.RS_BankSearchY
+	MouseMove 0, -100, 10, R		; To stop the mouse from hovering over the icon
+}
+
+inBankEmptyBackpack() {
+	deterministicallyFind([[var.RS_BankEmptyBackpackX, var.RS_BankEmptyBackpackY]], ["EmptyBackpack.png"])
+	Click
+}
+
+loadBankPreset1() {
+	Send {1 Down}
+	Sleep 250
+	Send {1 Up}
+}
+
+loadBankPreset2_InMenu() {
+	Click 725, 812
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_Gear.png"])
+	Click 268, 279
+	Sleep 1000
+	Click 778, 63
+	Sleep 2500
+}

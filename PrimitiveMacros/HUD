@@ -1,0 +1,423 @@
+#include MiscFunctions
+
+createStandardGUI() {
+	global
+	HUDWidth := 320
+	HUDHeight := 200
+	Gui Show, w%HUDWidth% h%HUDHeight%, Macro HUD
+	Gui +AlwaysOnTop
+}
+
+showAgilityHUD() {
+	global
+	createStandardGUI()
+	Gui Add, DropDownList, w160 vSelection gAgilityHUDSelected, Automate|Advanced Barbarian|Advanced Gnome Stronghold|Ape Atoll|Yanille Trellis
+	Gui Add, Picture, gTrellisSelected xs Section, resources/Trellis.png
+	return
+
+	AgilityHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Automate") {
+			MsgBox Make sure correct Agility Course is selected in code
+			automateAgilityCourse()
+		}
+		if(Selection = "Advanced Barbarian") {
+			automateAdvancedBarbarianAgilityCourse()
+		}
+		if(Selection = "Advanced Gnome Stronghold") {
+			MsgBox Make sure you have Summer Pies available if below 85
+			automateAdvancedGnomeAgilityCourse()
+		}
+		if(Selection = "Ape Atoll") {
+			automateApeAtollAgilityCourse()
+		}
+		if(Selection = "Yanille Trellis") {
+			automateYanilleTrellisClimbing()
+		}
+		return
+	}
+
+	TrellisSelected:
+	{
+		GuiControl,, Selection, Yanille Trellis||
+		GoSub AgilityHUDSelected
+		return
+	}
+}
+
+showCombatHUD() {
+	;lesserDemons()
+	;waterfiends()
+	;babyBlueDragons()
+	;hellhounds()
+	hellHoundsMysteriousDoor()
+}
+
+showConstructionHUD() {
+	oakLarderMacro()
+}
+
+showCookingHUD() {
+	cookingMacro()
+}
+
+showCraftingHUD() {
+	global
+	createStandardGUI()
+	Gui Add, DropDownList, w160 vSelection gCraftingHUDSelected, Edgeville Crafting|Dragon Hide|Play Harp
+	return
+
+	CraftingHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Dragon Hide") {
+			automateDragonHide()
+		}
+		if(Selection = "Edgeville Crafting") {
+			automateCraftingInEdgeville()
+		}
+		if(Selection = "Play Harp") {
+			playHarp()
+		}
+		return
+	}
+}
+
+showDivinationHUD() {
+	autoDivination()
+}
+
+showFiremakingHUD() {
+	firemakingMacro()
+}
+
+showFishingHUD() {
+	global
+	createStandardGUI()
+	Gui Add, DropDownList, w150 vSelection gFishingHUDSelected, Fly Fishing Above Seers Bank
+	return
+
+	FishingHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Fly Fishing Above Seers Bank") {
+			MsgBox Make sure Action Bar Slot 1 and 2 are set to the raw salmon and raw trout`nAlso have feathers on you
+			flyFishingAboveSeersBank()
+		}
+		return
+	}
+}
+
+showGrandExchangeHUD() {
+	runGrandExchangeMacro()
+}
+
+showMiningHUD() {
+	global
+	createStandardGUI()
+	Gui Add, DropDownList, w160 vSelection gMiningHUDSelected, Living Caverns|Granite|Mine Iron North of Eagles Peak|Mine Seren Stone
+	Gui Add, Picture, gMineGraniteSelected xs Section, resources/GraniteIcon.png
+	Gui Add, Picture, gNorthOfEaglesPeakSelected ys, resources/NorthOfEaglesPeak.png
+	return
+
+	MiningHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Living Caverns") {
+			MsgBox Make sure Action Bar Slot 1 is set to Ore
+			mineOreInLivingRockCave()
+		}
+		if(Selection = "Mine Iron North of Eagles Peak") {
+			MsgBox Make sure Action Bar Slot 1 is set to Iron Ore
+			mineIronNorthOfEaglesPeak()
+		}
+		if(Selection = "Granite") {
+			mineGranite()
+		}
+		if(Selection = "Mine Seren Stone") {
+			mineSerenStone()
+		}
+		return
+	}
+
+	MineGraniteSelected:
+	{
+		GuiControl,, Selection, Granite||
+		GoSub MiningHUDSelected
+		return
+	}
+
+	NorthOfEaglesPeakSelected:
+	{
+		GuiControl,, Selection, Mine Iron North of Eagles Peak||
+		GoSub MiningHUDSelected
+		return
+	}
+}
+
+showPrayerHUD() {
+	automatePrayer()
+}
+
+showProcessHUD() {
+	global
+	createStandardGUI()
+	Gui Add, DropDownList, vSelection gProcessHUDSelected, Granite|Herb|Scale|Fletch Bow|String Bow
+	Gui Add, Checkbox, vMultiProcessCheckbox ys+4, Multi Process?
+	Gui Add, Picture, gGraniteSelected xs Section, resources/GraniteIcon.png
+	Gui Add, Picture, gHerbSelected ys, resources/GrimyHerbIcon.png
+	Gui Add, Picture, gScaleSelected ys, resources/BlueDragonScaleIcon.png
+	Gui Add, Picture, gFletchBowSelected ys, resources/Shortbow_U.png
+	Gui Add, Picture, gStringBowSelected ys, resources/Shortbow.png
+	return
+
+	ProcessHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Granite") {
+			if(MultiProcessCheckbox = 0)
+				automateOneClickProcessing("Granite (", "Text_Granite.png", "Text_Craft.png", "Text_Crafting.png", 7, 7000)
+			else
+				multipleProcessing("Text_Craft.png", 7000)
+		}
+		else if(Selection = "Herb") {
+			if(MultiProcessCheckbox = 0)
+				automateOneClickProcessing("Grimy", "Text_Grimy.png", "Text_Clean.png", "Text_Herblore.png", 28, 18000)
+			else
+				multipleProcessing("Text_Clean.png", 18000)
+		}
+		else if(Selection = "Scale") {
+			if(MultiProcessCheckbox = 0)
+				automateOneClickProcessing("Scale", "Text_Scale.png", "Text_Grind.png", "Text_GrindMenu.png", 28, 18000)
+			else
+				multipleProcessing("Text_Grind.png", 18000)
+		}
+		else if(Selection = "Fletch Bow") {
+			MsgBox, Before processing ensure log fletching and correct bow are selected`nAlso for fletching bows only Multi Processing is supported (sorry)
+			multipleProcessing("Text_Craft.png", 52000)
+		}
+		else if(Selection = "String Bow") {
+			MsgBox, Stringing bows is Multi Processing option only (sorry)`nPreset should be 14 unstrung bows then 14 bowstrings
+			multipleProcessing("Text_String.png", 16000)
+		}
+		return
+	}
+
+	GraniteSelected:
+	{
+		GuiControl,, Selection, Granite||
+		GoSub ProcessHUDSelected
+		return
+	}
+
+	HerbSelected:
+	{
+		GuiControl,, Selection, Herb||
+		GoSub ProcessHUDSelected
+		return
+	}
+
+	ScaleSelected:
+	{
+		GuiControl,, Selection, Scale||
+		GoSub ProcessHUDSelected
+		return
+	}
+
+	FletchBowSelected:
+	{
+		GuiControl,, Selection, Fletch Bow||
+		GoSub ProcessHUDSelected
+		return
+	}
+
+	StringBowSelected:
+	{
+		GuiControl,, Selection, String Bow||
+		GoSub ProcessHUDSelected
+		return
+	}
+}
+
+showRunecraftingHUD() {
+	autoRunecraft()
+}
+
+showSmithingHUD() {
+	automateSmithing()
+}
+
+showSummoningHUD() {
+	automateSummoning()
+}
+
+showTravelHUD() {
+	taverlyDungeonHellhounds()
+}
+
+showThievingHUD() {
+	thievingMacro()
+}
+
+showWoodcuttingHUD() {
+	ivyCutting()
+}
+
+showMainHUD() {
+	global
+	Gui Destroy
+	createStandardGUI()
+	; To add to list:
+	;	Agility
+	;	Construction
+	;	Grand Exchange
+	;	Smithing
+	;	Thieving
+	Gui Add, DropDownList, vSelection gMainHUDSelected, Agility|Combat|Construction|Crafting|Divination|Firemaking|Fishing|Mining|Prayer|Process|Runecrafting|Summoning|Thieving|Travel|Woodcutting
+	Gui Add, Picture, gAutoProcessSelected xs Section, resources/AutoProcess.png
+	Gui Add, Picture, gAgilitySelected ys, resources/Agility.png
+	Gui Add, Picture, gConstructionSelected ys, resources/Construction.png
+	Gui Add, Picture, gCookingSelected ys, resources/Cooking.png
+	Gui Add, Picture, gFiremakingSelected ys, resources/Firemaking.png
+	Gui Add, Picture, gFishingSelected ys, resources/Fishing.png
+	Gui Add, Picture, gMiningSelected ys, resources/Mining.png
+	Gui Add, Picture, gWoodcuttingSelected ys, resources/Woodcutting.png
+	Gui Add, Picture, gRunecraftingSelected xs Section, resources/Runecrafting.png
+	Gui Add, Picture, gDivinationSelected ys, resources/Divination.png
+
+	Gui, Add, Button, gmonitorHealth, Monitor Health
+	return
+
+	MainHUDSelected:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		if(Selection = "Agility")
+			showAgilityHUD()
+		else if(Selection = "Combat")
+			showCombatHUD()
+		else if(Selection = "Construction")
+			showConstructionHUD()
+		else if(Selection = "Cooking")
+			showCookingHUD()
+		else if(Selection = "Crafting")
+			showCraftingHUD()
+		else if(Selection = "Divination")
+			showDivinationHUD()
+		else if(Selection = "Firemaking")
+			showFiremakingHUD()
+		else if(Selection = "Fishing")
+			showFishingHUD()
+		else if(Selection = "Grand Exchange")
+			showGrandExchangeHUD()
+		else if(Selection = "Mining")
+			showMiningHUD()
+		else if(Selection = "Prayer")
+			showPrayerHUD()
+		else if(Selection = "Process")
+			showProcessHUD()
+		else if(Selection = "Runecrafting")
+			showRunecraftingHUD()
+		else if(Selection = "Smithing")
+			showSmithingHUD()
+		else if(Selection = "Summoning")
+			showSummoningHUD()
+		else if(Selection = "Thieving")
+			showThievingHUD()
+		else if(Selection = "Travel")
+			showTravelHUD()
+		else if(Selection = "Woodcutting")
+			showWoodcuttingHUD()
+		return
+	}
+
+	AutoProcessSelected:
+	{
+		GuiControl,, Selection, Process||
+		GoSub MainHUDSelected
+		return
+	}
+
+	AgilitySelected:
+	{
+		GuiControl,, Selection, Agility||
+		GoSub MainHUDSelected
+		return
+	}
+
+	ConstructionSelected:
+	{
+		GuiControl,, Selection, Construction||
+		GoSub MainHUDSelected
+		return
+	}
+
+	CookingSelected:
+	{
+		GuiControl,, Selection, Cooking||
+		GoSub MainHUDSelected
+		return
+	}
+
+	DivinationSelected:
+	{
+		GuiControl,, Selection, Divination||
+		GoSub MainHUDSelected
+		return
+	}
+
+	FiremakingSelected:
+	{
+		GuiControl,, Selection, Firemaking||
+		GoSub MainHUDSelected
+		return
+	}
+
+	FishingSelected:
+	{
+		GuiControl,, Selection, Fishing||
+		GoSub MainHUDSelected
+		return
+	}
+
+	MiningSelected:
+	{
+		GuiControl,, Selection, Mining||
+		GoSub MainHUDSelected
+		return
+	}
+
+	RunecraftingSelected:
+	{
+		GuiControl,, Selection, Runecrafting||
+		GoSub MainHUDSelected
+		return
+	}
+
+	WoodcuttingSelected:
+	{
+		GuiControl,, Selection, Woodcutting||
+		GoSub MainHUDSelected
+		return
+	}
+
+	monitorHealth:
+	{
+		Gui Submit, NoHide
+		Gui Destroy
+		startHealthScript()
+		return
+	}
+}
+
+GuiClose:
+{
+	Gui Destroy
+	return
+}

@@ -1,0 +1,37 @@
+#include Camera
+
+;	This will destroy your memories since using them would be too difficult for now
+;		- Because of this ensure you have each of the two types of memories in action bar slot 1 and 2 for destruction
+
+;	[WARNING] This does NOT work very well at all...
+autoDivination() {
+	Loop {
+BeginDivinationSearch:
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["TeleportH.png"])		; Ensures an errorout if game disconnects
+		output := deterministicallySearchWithLimit([[300, 270], [1440, 840]], ["Text_Harvest.png"], 20)
+		if(output = false)
+			goto BeginDivinationSearch
+		Click right
+		MouseMove 0, 25, 5, R
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "DivinationIcon.png")
+		Click
+		Sleep 5000
+
+		Click 665, 1025
+		MouseMove 0, -15, 5, R
+		Click
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_All.png", 10) = true)
+			Click 1000, 780
+		else if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_Yes_Green.png", 10) = true)
+			Click 1075, 780
+		Sleep 500
+		Click 700, 1025
+		MouseMove 0, -15, 5, R
+		Click
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_All.png", 10) = true)
+			Click 1000, 780
+		else if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_Yes_Green.png", 10) = true)
+			Click 1075, 780
+		Sleep 500
+	}
+}

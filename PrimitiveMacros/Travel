@@ -1,0 +1,90 @@
+areInTeleportMenu() {
+	if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_Lodestone.png", 100))
+		return true
+	return false
+}
+
+openTeleportMenu() {
+	SendInput {T Down}
+	Sleep 1000
+	SendInput {T Up}
+	Sleep 1000
+	if(areInTeleportMenu())
+		return true
+	return false
+}
+
+closeTeleportMenu() {
+	if(areInTeleportMenu() = true)
+		Click 1204, 380
+}
+
+teleportToLodestone(lodestone) {
+	openTeleportMenu()
+
+	if(lodestone == "Burthorpe") {
+		SendInput {B Down}
+		Sleep 250
+		SendInput {B Up}
+		Sleep 10000
+		resetCamera()	; Safety
+		deterministicallyFind([[82, 1017]], ["Text_Bank.png"])
+	}
+	else if(lodestone == "Taverly") {
+		SendInput {T Down}
+		Sleep 250
+		SendInput {T Up}
+		Sleep 10000
+		resetCamera()	; Safety
+		deterministicallyFind([[1384, 170]], ["Text_SearchBarrel.png"])
+	}
+	else if(lodestone == "Yanille") {
+		SendInput {Y Down}
+		Sleep 250
+		SendInput {Y Up}
+		Sleep 10000
+		resetCamera()	; Safety
+		deterministicallyFind([[1863, 363]], ["Text_Portal.png"])
+	}
+	else {
+		errorOut("Tried to teleport to non existant lodestone")
+	}
+}
+
+;	Assumes home is in Taverly
+teleportHome(buildMode) {
+	teleportToLodestone(var.Taverly)
+	deterministicallyFind([[110, 90]], ["Text_EnterPortal.png"])
+	if(buildMode = true)
+		menuSelect(3)
+	else
+		menuSelect(2)
+	; Allow for warp animation to complete
+	Sleep 1000
+	deterministicallyFind([[992, 678]], ["Text_EnterPortal.png"])
+}
+
+taverlyDungeonHellhounds() {
+	teleportToLodestone("Taverly")
+	standardResetCamera()
+	Sleep 1000
+	SendInput {Right Down}
+	Sleep 650
+	SendInput {Right Up}
+	Sleep 1000
+	walkHere(62, 354)
+	deterministicallyFind([[284, 367], [143, 430], [372, 322], [476, 273]], ["Text_Steps.png"])
+	Sleep 5000
+	deterministicallyFind([[284, 367], [143, 430], [372, 322], [476, 273]], ["Text_Steps.png"])
+	menuSelect(1)
+	standardResetCamera()
+	deterministicallyFind([[786, 179]], ["Text_StrangeFloor.png"])
+	Sleep 5000
+	deterministicallyFind([[786, 179]], ["Text_StrangeFloor.png"])
+	Click
+	resetCamera()
+	deterministicallyFind([[1104, 531]], ["Text_StrangeFloor.png"])
+	Sleep 2500
+	deterministicallyFind([[1104, 531]], ["Text_StrangeFloor.png"])
+	Click 663, 52
+}

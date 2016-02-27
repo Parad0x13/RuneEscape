@@ -1,0 +1,162 @@
+#include Camera
+#include MiscFunctions
+
+waitUntilExitCombat() {
+	Loop {
+		if(openTeleportMenu()) {
+			Sleep 10000
+			if(areInTeleportMenu()) {
+				closeTeleportMenu()
+				return
+			}
+		}
+		ensureAreInGame()
+	}
+}
+
+hellhounds() {
+	ensureBar1Active()
+	ensureAutoRetaliateIsActive()
+	Loop {
+		teleportToLodestone("Burthorpe")
+		openBank(82, 1017, "Text_Bank.png")
+		loadBankPreset2_InMenu()
+
+		taverlyDungeonHellhounds()
+
+		startHealthScript()
+		startSpamSpecialAttackScript()
+		Sleep 120000
+
+		waitUntilExitCombat()
+
+		killHealthScript()
+		killSpamSpecialAttackScript()
+	}
+}
+
+walkToHellHoundMysteriousDoor() {
+	tryCount := 0
+	Loop {
+		Click 1460, 430
+		if(findImage(1040, 680, "Text_ExitMysterious.png", 1))
+			break
+		Sleep 500
+		tryCount := tryCount + 1
+		if(tryCount = 40)
+			errorOut("Couldn't find Mysterious Door")
+	}
+}
+
+exitEnterHellHoundMysteriousDoor(x, y) {
+	deterministicallyFind([[x, y]], ["Text_ExitMysterious.png"])
+	Click
+	deterministicallyFind([[863, 536, y]], ["Text_EnterMysterious.png"])
+	Click
+	deterministicallyFind([[1040, 500]], ["Text_ExitMysterious.png"])9
+	walkToHellHoundMysteriousDoor()
+}
+
+hellHoundsMysteriousDoor() {
+	resetCamera()
+	minutes := 10
+
+	Loop {
+		walkToHellHoundMysteriousDoor()
+		exitEnterHellHoundMysteriousDoor(1040, 680)
+		Click 1637, 302
+
+		startSpamSpecialAttackScript()
+
+		Loop %minutes% {
+			Sleep (1000 * 60)
+
+			MouseMove 950, 450
+			Click Right 950, 450
+			MouseMove 0, -100,, R
+			ensureAreInGame()
+		}
+
+		killSpamSpecialAttackScript()
+	}
+}
+
+lesserDemons() {
+BeginLesserDemonSearch:
+	output := deterministicallySearchWithLimit([[620, 230], [1330, 830]], ["Text_Attack.png"], 1)
+	if(output = false)
+			Goto BeginLesserDemonSearch
+	Click right
+	MouseMove 0, 25, 5, R
+	deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "Text_LesserDemon.png")
+	Click
+}
+
+; Stand in location indicated in "WaterfiendsLocation" reference image
+waterfiends() {
+	resetCamera()
+	positions := [[970, 600], [1025, 540], [1220, 545], [975, 715], [850, 715], [710, 835]]
+	positionIndex := 1
+
+	Loop {
+		MouseMove 0, 0
+		position := positions[positionIndex]
+		positionIndex := positionIndex + 1
+		if(positionIndex > positions.MaxIndex())
+			positionIndex := 1
+		x := position[1]
+		y := position[2]
+		MouseMove x, y
+		Click Right
+
+		Loop 10 {
+			PixelGetColor, OutputVar, (x - 20 + A_Index), (y+44), RGB
+			a := ToRGB(OutputVar)
+			b := ToRGB(0xC8C902)
+			if(Compare(a, b, 50) = 1) {
+				;MsgBox Hit!
+				menuSelect(3)
+				Sleep 2500
+				deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "Text_Waterfiend.png")
+				Goto SearchForNextWaterfiend
+			}
+		}
+SearchForNextWaterfiend:
+	}
+}
+
+; Sometimes if you accidentally click on Blue Dragon it will ignore the dragon killing you
+babyBlueDragons() {
+	resetCamera()
+	;positions := [[1360, 565], [1410, 465], [1285, 510], [950, 200], [930, 625], [1160, 200], [1120, 625]]
+	;positions := [[1000, 200], [935, 205]]
+	positions := [[1360, 565], [1005, 205], [895, 300], [995, 820], [530, 875]]
+	positionIndex := 1
+
+	Loop {
+		MouseMove 0, 0, 1
+		position := positions[positionIndex]
+		positionIndex := positionIndex + 1
+		if(positionIndex > positions.MaxIndex())
+			positionIndex := 1
+		x := position[1]
+		y := position[2]
+		if(findImage(x, y, "Text_Attack.png", 1)) {
+			Click Right
+			Loop 10 {
+				PixelGetColor, OutputVar, (x - 20 + A_Index), (y+28), RGB
+				a := ToRGB(OutputVar)
+				b := ToRGB(0xD8D901)
+				if(Compare(a, b, 50) = 1) {
+					;MsgBox Hit!
+					menuSelect(1)
+					Sleep 2500
+					deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "Text_BabyBlueDragon.png")
+					Sleep 1000
+					Goto SearchForNextBabyBlueDragon
+				}
+			}
+		}
+SearchForNextBabyBlueDragon:
+	}
+}

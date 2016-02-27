@@ -1,0 +1,66 @@
+#include Settings
+#include Camera
+#include ImageManagement
+#include MiscFunctions
+
+;	Must stand in center spot of the 3 iron ore
+;		- Have iron as your first action bar item (for dropping)
+mineIronNorthOfEaglesPeak() {
+	resetCamera()
+	Send {1 Down}	; Sending 1 Down will continuously drop until script is reloaded
+	loop {
+		oreFound := deterministicallyFind([[910, 550], [970, 600], [1015, 550]], ["Text_Iron.png"])
+		Click
+		MouseGetPos xpos, ypos
+		deterministicallyFind([[xpos, ypos]], ["Text_MineRocks.png"])
+	}
+}
+
+;	Note, because granite doesn't say when it's ready to be mined this script might
+;		error out if all granite spots are mined out
+;	- Have lots of full Waterskins or an enchanted Water Tiara
+;	- Must start at the top left of the square granite patch
+mineGranite() {
+	freeSlot := getLocations(["Free Inventory Slot"])
+	points := [[970, 660], [1090, 545], [970, 440], [860, 545]]
+	graniteIndex := 1
+	loop {
+		Click % points[graniteIndex][1] "," points[graniteIndex][2]
+		deterministicallyFind([[freeSlot[1][1], freeSlot[1][2]]], ["Text_Craft.png"])
+		Send {Click Down}
+		MouseMove -500, 0, 5, R
+		Send {Click Up}
+		Sleep 1000
+		graniteIndex := graniteIndex + 1
+		if(graniteIndex = 5)
+			graniteIndex := 1
+	}
+}
+
+;	World 84 is Living Caverns World
+;	Go to the safe spot located in LivingRockCavernOreSafeSpot.jpg
+;	Make sure you dont' have a rock guy chasing after you when you get to the spot
+;	Make sure you have ore in action bar slot 1 for dropping
+;	Will have to hop worlds often since this ore doesn't regen for quite awhile
+mineOreInLivingRockCave() {
+	resetCamera()
+	Send {1 Down}	; Sending 1 Down will continuously drop until script is reloaded
+	loop {
+		if(findImage(885, 500, "Text_Mine.png", 25))
+			Click
+		Sleep 10000
+		Click Right, 1130, 300
+		MouseMove 0, -100,, R
+		ensureAreInGame()
+	}
+}
+
+; Be standing above any Seren Stone
+mineSerenStone() {
+	resetCamera()
+	Loop {
+		deterministicallyFind([[965, 600]], ["Text_SerenStone.png"])
+		menuSelect(1)		; This is because sometimes the stupid workers get in the way
+		Sleep 10000
+	}
+}

@@ -1,0 +1,16 @@
+#include Camera
+
+autoRunecraft() {
+	Loop {
+BeginRunecraftingSearch:
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["TeleportH.png"])		; Ensures an errorout if game disconnects
+		output := deterministicallySearchWithLimit([[300, 270], [1440, 840]], ["Text_Siphon.png"], 20)
+		if(output = false)
+			Goto BeginRunecraftingSearch
+		Click right
+		MouseMove 0, 25, 5, R
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "RunecraftingIcon.png")
+		Click
+		Sleep 5000
+	}
+}

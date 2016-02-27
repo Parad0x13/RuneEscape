@@ -1,0 +1,25 @@
+#include MiscFunctions
+
+;	Hover cursor over Smuggler
+dungeoneeringPurchase() {
+	resetCamera()
+	deterministicallyFind([[970, 545], [900, 590], [955, 540]], ["Text_Smuggler.png"])
+	menuSelect(2)
+	deterministicallyFind([[940, 660]], ["Text_Tangle.png"])
+	menuSelect(2)
+	Loop 10
+		Click WheelDown
+	deterministicallyFind([[890, 645]], ["Text_Feather.png"])
+	menuSelect(5)
+	deterministicallyFind([[1145, 450]], ["Text_Rune.png"])
+	menuSelect(5)
+	Click 1205, 380
+	deterministicallyFind([[1208, 379], [705, 420], [830, 885], [1325, 720], [1125, 290]], ["Text_Altar.png"])
+	menuSelect(1)
+	ensureAreInProcessingMenu()
+	deterministicallyFind([845, 515], ["Text_Cosmic.png"])
+	Click
+	executeProcessingInProcessingMenu()
+}
+
+!D::dungeoneeringPurchase()

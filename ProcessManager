@@ -1,0 +1,14 @@
+global PIDs := Object()
+
+registerProcess(process) {
+	Run %process%,,,PID
+	PIDs.insert(PID)
+}
+
+elegantlyCloseProcesses() {
+	for index, value in PIDs {
+		Process, Close, %value%
+	}
+
+	PIDs := Object()
+}

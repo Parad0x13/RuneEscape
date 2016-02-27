@@ -1,0 +1,7 @@
+errorOut(notice) {
+	Tooltip % notice
+	Loop {
+		SoundPlay, resources/Alarm.mp3, WAIT
+	}
+	Reload
+}

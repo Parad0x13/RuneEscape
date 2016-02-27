@@ -1,0 +1,73 @@
+#include Settings
+#include ImageManagement
+#include Bank
+
+isGrandExchangeOpen() {
+	return findImage(800, 390, "Text_GrandExchange.png", 10)
+}
+
+closeGrandExchange() {
+	Click 1210, 380
+}
+
+openGrandExchange() {
+	deterministicallyFind([[970, 425]], ["Text_Exchange.png"])
+	Click
+}
+
+statusOfGrandExchangeSlot(slot) {
+	returned := deterministicallyFind([[GE_StatusIndicatorLocations[slot][1], GE_StatusIndicatorLocations[slot][2]]], ["Text_Empty.png", "Text_Buy.png", "Text_Sell.png"])
+	if returned[2] = "Text_Empty.png"
+		return GE_Status_Empty
+	else if returned[2] = "Text_Buy.png"
+		return GE_Status_Buy
+	else
+		return GE_Status_Sell
+}
+
+determineGrandExchangeSlotStatus() {
+	loop 6
+		GE_Slot_Status[A_Index] := statusOfGrandExchangeSlot(A_Index)
+}
+
+filledStatusOfGrandExchangeSlot(slot) {
+	if GE_Slot_Status[slot] = GE_Status_Empty
+		return GE_Status_Empty
+	PixelGetColor, color, GE_FilledStatusIndicatorLocations[slot][1], GE_FilledStatusIndicatorLocations[slot][2], RGB
+	if color = 0x3F821E
+		return GE_Status_Filled
+	else if color = 0x2A2422
+		return GE_Status_Unfilled
+	else
+		return GE_Status_PartiallyFilled	; 0xC68B01
+}
+
+determineGrandExchangeSlotFilledStatus() {
+	loop 6
+		GE_Slot_FilledStatus[A_Index] := filledStatusOfGrandExchangeSlot(A_Index)
+}
+
+setupGrandExchangeMacro() {
+	determineGrandExchangeSlotStatus()
+	determineGrandExchangeSlotFilledStatus()
+}
+
+refreshExchangeStatusKnowledge() {
+	if isGrandExchangeOpen()
+		closeGrandExchange()
+	openGrandExchange()
+	deterministicallyFind([[970, 425]], ["Text_Exchange.png"])
+	setupGrandExchangeMacro()
+}
+
+runGrandExchangeMacro() {
+	refreshExchangeStatusKnowledge()
+
+	for slotIndex, slot in GE_SlotLocations {
+		for buttonIndex, button in slot {
+			MouseMove button[1], button[2]
+		}
+	}
+
+	MsgBox, Done
+}

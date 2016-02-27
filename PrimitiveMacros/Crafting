@@ -1,0 +1,120 @@
+#include Settings
+#include Bank
+#include Camera
+#include MiscFunctions
+
+; Be at the first harp farthest right
+; Shouldn't need to add extra logic to ensure activity since Harp should always detune within 5 minutes
+playHarp() {
+	resetCamera()
+	Loop {
+		result := deterministicallyFind([[915, 530]], ["Text_Play.png", "Text_Tune.png"])
+		if(result[2] = "Text_Tune.png")
+			Click
+		Sleep 1000
+	}
+}
+
+;	Pick flax near Catherby
+;		- Must be in the right spot (reference picture)
+pickFlaxNearCatherby() {
+	resetCamera()
+	loop {
+		deterministicallyFind([[965, 492], [1021, 547], [968, 604], [913, 543]], ["Text_PickFlax.png"])
+		Click
+		Sleep 1500
+	}
+}
+
+;	Auto spins flax in Lumbridge and auto banks it (turns out the turnout is horrible for this lol)
+;		- Must be at bank teller in top floor
+;		- Must not be in bank menu so that camera can reset
+;		- Must have flax in first slot in bank
+lumbridgeSpinFlaxAutoBank() {
+	standardResetCamera()
+	openBank(965, 440, "Text_BankBanker.png")
+	inBankEmptyBackpack()
+	withdrawBankItem("Flax", 28)
+	savePresetOne(965, 440, "Text_BankBanker.png")
+	loop {
+		loadBankPreset1()
+		Sleep 2000	; Allows the camera to finish setting into the correct place
+		Click 963, 872
+		deterministicallyFind([[652, 884]], ["Text_Staircase.png"])
+		Click
+		deterministicallyFind([[1174, 447]], ["Text_Spin.png"])
+		Click
+		deterministicallyFind([[1075, 683]], ["Text_SpinMenu.png"])
+		Click
+		Sleep 51000
+		deterministicallyFind([[570, 780]], ["Text_Staircase.png"])
+		menuSelect(2)
+		deterministicallyFind([[1080, 238]], ["Text_Bank.png"])
+		Click
+		inBankEmptyBackpack()
+	}
+}
+
+; To get the camera correct go into the crafting furnace in Lumbridge then click on the chest
+;		- Assumes you are not in bank (chest)
+;		- Assumes you already have preset 1 setup
+;		- Assumes you already have the correct crafting item selected in the furnace
+automateCraftingInLumbridge() {
+	standardResetCamera()
+	openBank(1010, 535, "Text_UseBankChest.png")
+	Loop {
+		ensureAreInBank()
+		loadBankPreset1()
+		Sleep 2000		; Make sure walking animation finished
+		walkHere(1435, 680)
+		deterministicallyFind([[1260, 480]], ["Text_Furnace.png"])
+		Click
+		executeProcessingInProcessingMenu()
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "XButton.png")
+		; To make sure the menu closes (ensuring we haven't ran out of resources)
+		; we check to see if we can see the furnace which is hidden by the menu by default
+		; This ensures that when resources run out the script will error out
+		deterministicallyFind([[1020, 480]], ["Text_Furnace.png"])
+		Click 390, 470
+	}
+}
+
+;		- Assumes you are not in bank (chest)
+;		- Assumes you already have preset 1 setup
+;		- Assumes you already have the correct crafting item selected in the furnace
+automateCraftingInEdgeville() {
+	resetCamera()
+	openBank(965, 590, "Text_BankCounter.png")
+
+	Loop {
+		ensureAreInBank()
+		loadBankPreset1()
+		deterministicallyFind([[1630, 330]], ["Text_Furnace.png"])
+		Click
+		executeProcessingInProcessingMenu()
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "XButton.png")
+		; To make sure the menu closes (ensuring we haven't ran out of resources)
+		; we check to see if we can see the furnace which is hidden by the menu by default
+		; This ensures that when resources run out the script will error out
+		deterministicallyFind([[1020, 480]], ["Text_Furnace.png"])
+		openBank(215, 815, "Text_BankCounter.png")
+	}
+}
+
+;	Stand in standard G.E. area
+;	Preset 1 should be your thread and then all the hides you want to use
+;	Make sure correct item to craft is selected
+automateDragonHide() {
+	resetCamera()
+	Loop {
+		openBank(var.RS_BankProcessingX, var.RS_BankProcessingY, "Text_BankBanker.png")
+		loadBankPreset1()
+		deterministicallyFind([[1800, 725]], ["Text_Craft.png"])
+		Click
+		executeProcessingInProcessingMenu()
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "XButton.png")
+	}
+}
+
+!F::pickFlaxNearCatherby()
+!S::lumbridgeSpinFlaxAutoBank()

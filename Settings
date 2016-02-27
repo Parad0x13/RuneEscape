@@ -1,0 +1,3 @@
+global RuneEscapeVersion := "Rune Escape v0.1"
+global TimeoutValue := 60000
+global MOUSELOCATION := 666666

@@ -1,0 +1,75 @@
+#include Settings
+#include ProcessManager
+#include ImageManagement
+
+presentHUD() {
+	Gui, Show, x500 y200 h600 w800, %RuneEscapeVersion%
+	Gui, Add, Button, x690 y560 w100 h30 gRunPrimitive, Primitive Macros
+	Gui, Add, Picture, x668 y568 w16 h16 gRunPrimitiveHelp BackgroundTrans, resources\question.png
+	Gui, Add, Button, x10 y20 w120 h40 gLaunchRunescape, Launch RuneScape
+	Gui, Add, Picture, x135 y31 w16 h16 gLaunchRunescapeHelp BackgroundTrans, resources\question.png
+	Gui, Add, Picture, x750 y10 w32 h32 gRunLocationData BackgroundTrans, resources\target.png
+	Gui, Add, Picture, x731 y19 w16 h16 gRunLocationDataHelp BackgroundTrans, resources\question.png
+	Gui, Add, Picture, x745 y60 w48 h40 gRunMacroCreator BackgroundTrans, resources\MacroCreatorIcon.png
+}
+
+RunPrimitive() {
+	MsgBox 4,, Exit %RuneEscapeVersion% and view old macros?
+	IfMsgBox Yes
+	{
+		Run %A_WorkingDir%/PrimitiveMacros
+		ExitApp
+	}
+}
+
+RunPrimitiveHelp() {
+	MsgBox Archive of old Runescape Bot that got me banned
+}
+
+LaunchRunescape() {
+	Gui Destroy
+
+	passwordLocation := A_MyDocuments
+	StringReplace, passwordLocation, passwordLocation, \, /, All
+	passwordLocation .= "/RSCustom"
+	FileRead password, %passwordLocation%
+
+	location := A_MyDocuments
+	StringReplace, location, location, \, /, All
+	location := ParentDirectory(location)
+	location .= "/jagexcache/jagexlauncher/bin/JagexLauncher.exe runescape"
+	Run %location%
+
+	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["TitleIndicator.png"])
+	WinMaximize RuneScape
+
+	StringLen length, password
+	if length > 0
+	{
+		Sleep 1000
+		Send %password%
+		Sleep 500
+		Send {Enter}
+	}
+}
+
+LaunchRunescapeHelp() {
+	MsgBox Username should already be entered`n`nCustom password should be cleartext located:`n`tC:/Users/Username/Documents/RSCustom`n`nNo password will be entered if file does not exist
+}
+
+ParentDirectory(n) {
+	return RegExReplace(n, "/[^/]*$", "")
+}
+
+RunLocationData() {
+	registerProcess("LocationData.ahk")
+}
+
+RunLocationDataHelp() {
+	MsgBox Quickly check X, Y position onscreen and get the color at that location as well`n`nPress Esc to dismiss tooltip
+}
+
+RunMacroCreator() {
+	Run %A_WorkingDir%/ExtraTools/MacroCreator/MacroCreator.exe
+	Gui Destroy
+}

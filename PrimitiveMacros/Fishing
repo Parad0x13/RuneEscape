@@ -1,0 +1,33 @@
+#include Settings
+#include Camera
+#include ImageManagement
+#include MiscFunctions
+
+;	See SeersFlyFishing.png in references for location. Any of the 3 spots will do just fine
+;		- Have feathers on you
+;		- Have Raw trout as your first action bar item (for dropping)
+;		- Have Raw salmon as your second action bar item (for dropping)
+flyFishingAboveSeersBank() {
+	resetCamera()
+	delta := 50
+	; Auto dropping like this may slow down fishing, but it makes the macro simpler
+	Send {1 Down}	; Auto drops until script is reloaded
+	Send {2 Down}	; Auto drops until script is reloaded
+	loop {
+		MouseMove 970, 615
+		MouseGetPos xpos, ypos
+		deterministicallyFind([[xpos, ypos], [xpos-(delta*2), ypos], [xpos-(delta*1), ypos], [xpos+(delta*1), ypos], [xpos+(delta*2), ypos]], ["Text_Lure.png"])
+		Click
+		Sleep 2500	; So that you can finish walking to new spot
+		startedFishing := A_TickCount
+; Refresh of fishing is required in the even of server lag or
+; fishing lasts too long and the avatar just stops fishing altogether
+ContinueFishing:
+		timeSpentFishing := A_TickCount - startedFishing
+		if(timeSpentFishing > 10000)
+			goto RefreshFishing
+		if(findImage(xpos, ypos, "Text_Lure.png", 10))
+			goto ContinueFishing
+RefreshFishing:
+	}
+}

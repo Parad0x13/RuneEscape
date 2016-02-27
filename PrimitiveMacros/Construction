@@ -1,0 +1,87 @@
+#include MiscFunctions
+
+;		Refill inventory for Home related tasks
+refillInventoryForHomeRelatedTasks() {
+	accessBankThroughTeleport()
+	inBankEmptyBackpack()
+	withdrawBankItem("Oak Plank", 1000)
+	exitBank()
+	teleportHome(true)
+}
+
+buildRemoveItem() {
+	MouseGetPos xpos, ypos
+	menuSelect(2)
+	deterministicallyFind([[780, 450]], ["PlumingStand.png"])
+	Click
+	deterministicallyFind([[xpos, ypos]], ["Text_Make.png"])
+	menuSelect(3)
+	deterministicallyFind([[970, 740]], ["Text_ReallyRemoveIt.png"])
+	MouseMove 960, 790
+	Click
+	MouseMove xpos, ypos
+	; If this method is called repeatedly it might error out if not
+	; given ample enough time to remove the item just created
+	Sleep 2000
+}
+
+autoHomeMacro() {
+	loop {
+		refillInventoryForHomeRelatedTasks()
+		deterministicallyFind([[1440, 640]], ["Text_WorkAtWorkbench.png"])
+		Click
+		deterministicallyFind([[850, 400]], ["Text_Select.png"])
+		Click 1188, 395		; Have to reset position after walking to table
+		loop 4 {
+			deterministicallyFind([[900, 550]], ["Text_WorkAtWorkbench.png"])
+			Click
+			deterministicallyFind([[850, 400]], ["Text_Select.png"])
+			Click 800, 670
+			deterministicallyFind([[775, 575]], ["CarvedOakTableIcon.png"])
+			Click
+			Sleep 3000		; Sometimes you need to wait a bit before crafting is complete
+		}
+		; Now we need to leave the chair otherwise teleports will not work
+		Click 150, 900
+		Sleep 2000
+	}
+}
+
+;	Make sure you are standing in place with your butler in place as in reference picture "OakLarderReference.jpg"
+;	Make sure your butler has already gone to the bank for 20 oak planks
+;	This also assumes the butler will automatically take payments from thereon out.
+;		- This may take some work to get to before AFKing since it resets each relog
+oakLarderMacro() {
+	currentBuildNumber := 1
+	Loop {
+		deterministicallyFind([[1025, 540]], ["Text_TalkToButler.png"])
+		menuSelect(2)
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_WhatWouldYouLike.png"])
+		Send {1 Down}
+		Send {1 Up}
+		Sleep 8000
+		deterministicallyFind([[1025, 540]], ["Text_TalkToButler.png"])
+
+		if(currentBuildNumber = 1) {
+			repeatCount := 2
+			currentBuildNumber := 2
+		}
+		else if(currentBuildNumber = 2) {
+			repeatCount := 3
+			currentBuildNumber = 1
+		}
+
+		Loop %repeatCount% {
+			MouseMove 970, 465
+			menuSelect(2)
+			deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_SelectAPiece.png"])
+			Click 820, 510
+			deterministicallyFind([[970, 465]], ["Text_Search.png"])
+			menuSelect(3)
+			deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_ReallyRemoveIt.png"])
+			Send {1 Down}
+			Send {1 Up}
+			Sleep 1000
+		}
+	}
+}

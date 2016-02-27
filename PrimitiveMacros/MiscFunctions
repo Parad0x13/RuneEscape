@@ -1,0 +1,241 @@
+#include ImageManagement
+#include Settings
+
+location() {
+	MouseGetPos xpos, ypos
+	PixelGetColor, OutputVar, xpos, ypos, RGB
+	MsgBox Is %OutputVar% at %xpos%, %ypos%
+}
+
+!L::location()
+
+safeClick() {
+	Sleep 250
+	Click
+}
+
+menuSelect(optionIndex) {
+	Click right
+	sleep 100
+	delta := var.RS_RightClickMenuHeaderHeight + var.RS_RightClickMenuOptionHeight*optionIndex - var.RS_RightClickMenuOptionHeight/2
+	MouseMove 0, %delta%, 5, R
+	safeClick()
+	MouseMove 0, -%delta%, 1, R
+}
+
+walkHere(x, y) {
+	MouseMove x, y
+	menuSelect(1)
+}
+
+;	Press(Click) Constantly, for whatever reason you may want to use it
+;	Constantly presses the left mouse button at interval
+clickConstantly(interval) {
+	MouseGetPos xpos, ypos
+	loop {
+		MouseMove xpos, ypos
+		Click
+		Sleep interval
+		ensureAreInGame()
+	}
+}
+
+!M::clickConstantly(1000)
+
+moveToActionBar(actionIndex) {
+	MouseMove % var.RS_ActionBarFirstX + var.RS_ActionBarDeltaX*(actionIndex-1), var.RS_ActionBarFirstY, 10
+}
+
+clickActionBar(actionIndex) {
+	moveToActionBar(actionIndex)
+	Click
+}
+
+dropItemFromActionbar(actionIndex, dropCount) {
+	loop %dropCount% {
+		MouseMove % var.RS_ActionBarFirstX + var.RS_ActionBarDeltaX*(actionIndex-1), var.RS_ActionBarFirstY
+		Click Right
+		MouseMove 0, -20, 1, R
+		Click
+	}
+}
+
+dropItemFromActionBarAtMouseLocation() {
+	Click Right
+	MouseMove 0, -20, 1, R
+	Click
+	MouseMove 0, 20, 1, R
+}
+
+spamCombatSkills() {
+	loop {
+		MouseGetPos xpos, ypos
+		clickActionBar(1)
+		MouseMove xpos, ypos, 0
+	}
+}
+
+errorOut(notice) {
+	killAllExternalScripts()
+	;startAsyncMsgBox(%notice%)
+	startAsyncMsgBox(notice)
+	Loop
+		SoundPlay, resources/Alarm.mp3, WAIT
+	Reload
+}
+
+moveToBackpackSlot(slot) {
+	yindex := Floor((slot-1)/4)
+	xindex := Floor((slot-1) - yindex*4)
+	x := xindex * var.RS_BackpackSlotWidth
+	y := yindex * var.RS_BackpackSlotHeight
+	MouseMove % var.RS_BackpackSlotFirstX+x, var.RS_BackpackSlotFirstY+y, 1
+}
+
+;	Returns the slot of the found item, if cannot find it will error out
+findInBackpack(image, startSlot) {
+	Loop 28 {
+		actualSlot := A_Index + startSlot - 1
+		moveToBackpackSlot(actualSlot)
+		if(findImage(MOUSELOCATION, MOUSELOCATION, image, 10))
+			return actualSlot
+		if(actualSlot >= 28)
+			errorOut("Can't find in backpack")
+	}
+}
+
+; If only there was a sure fire way of discarding any item quickly...
+emptyBackpackSlot(slot) {
+	moveToBackpackSlot(slot)
+	Send {Click down}
+	MouseMove -400, 0, 10, R
+	Send {Click up}
+	Sleep 500
+}
+
+emptyBackpackRow(row) {
+	indexStart := (row-1)*4
+	loop 4
+		emptyBackpackSlot(indexStart + A_Index)
+}
+
+emptyBackpack() {
+	loop 28
+		emptyBackpackSlot(A_Index)
+}
+
+getLocations(prompts) {
+	retVal := Array()
+	for index, prompt in prompts {
+		ToolTip %prompt%
+		;KeyWait Space, D
+		KeyWait RButton, D
+		MouseGetPos x, y
+		retVal.insert([x, y])
+		ToolTip
+		Sleep 100
+	}
+	return retVal
+}
+
+activatePID(pid) {
+	WinActivate ahk_pid %pid%
+}
+
+ensureAreInGame() {
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["TeleportH.png"])
+}
+
+ensureBar1Active() {
+	if(findImage(MOUSELOCATOIN, MOUSELOCATION, "Bar1.png", 25))
+		return true
+	else
+		errorOut("Set bar to melee bar")
+}
+
+ensureAutoRetaliateIsActive() {
+	if(findImage(MOUSELOCATOIN, MOUSELOCATION, "AutoRetaliate.png", 25))
+		return true
+	else
+		errorOut("Turn Auto Retaliate on!")
+}
+
+ensureAreInProcessingMenu() {
+	deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["ProcessingIdentifier.png"])
+}
+
+emergencyExit() {
+	WinClose
+	errorOut("Logged out on purpose")
+}
+
+executeProcessingInProcessingMenu() {
+	ensureAreInProcessingMenu()
+	Send {Space Down}
+	Send {Space Up}
+}
+
+; Assumes you already have preset 1 loaded
+multipleProcessing(itemProcessingName, processingTime) {
+	pids := Array()
+	instances := Array()
+GetInstance:
+	instance := getLocations(["Bank Location", "Inventory Slot 1 Location"])
+	instances.insert(instance)
+	WinGet, currentPID, PID, A
+	pids.insert(currentPID)
+	MsgBox, 4,,"Add another location?"
+	IfMsgBox Yes
+		goto GetInstance
+
+	loop {
+		; Enter Bank
+		for index, instance in instances {
+			activatePID(pids[index])
+			deterministicallyFind([[instance[1][1], instance[1][2]]], ["Text_BankBanker.png"])
+			safeClick()
+		}
+
+		; Make sure Bank is open and load preset 1
+		for index, instance in instances {
+			activatePID(pids[index])
+			deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_BankOfRunescape.png"])
+			loadBankPreset1()
+		}
+
+		; Click item to process
+		; We HAVE to deterministically seek otherwise server lag will crash script
+		for index, instance in instances {
+			activatePID(pids[index])
+			deterministicallyFind([[instance[2][1], instance[2][2]]], [itemProcessingName])
+			safeClick()
+		}
+
+		; Make sure Processing menu is open and then go ahead and process
+		for index, instance in instances {
+			activatePID(pids[index])
+			ensureAreInProcessingMenu()
+			executeProcessingInProcessingMenu()
+		}
+		Sleep processingTime+500
+	}
+}
+
+automateOneClickProcessing(itemTooltipName, itemImageName, itemImageProcessingName, itemProcessingType, itemCount, processingTime) {
+	resetCamera()
+	openBank(var.RS_BankProcessingX, var.RS_BankProcessingY, "Text_BankBanker.png")
+	inBankEmptyBackpack()
+	withdrawBankItem(itemTooltipName, itemCount)
+	savePresetOne(var.RS_BankProcessingX, var.RS_BankProcessingY, "Text_BankBanker.png")
+	exitBank()
+	loop {
+		openBank(var.RS_BankProcessingX, var.RS_BankProcessingY, "Text_BankBanker.png")
+		loadBankPreset1()
+		deterministicallyFind([[var.RS_BackpackSlotFirstX, var.RS_BackpackSlotFirstY]], [itemImageProcessingName])
+		Click
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], [itemProcessingType])
+		Send {Space Down}
+		Send {Space Up}
+		Sleep processingTime+500
+	}
+}

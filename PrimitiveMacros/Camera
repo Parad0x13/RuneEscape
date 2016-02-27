@@ -1,0 +1,19 @@
+#include Settings
+
+standardResetCamera() {
+	Click % var.RS_MiniMapCompassX "," var.RS_MiniMapCompassY
+}
+
+resetCamera() {
+	standardResetCamera()
+	WinGetPos x, y, width, height, RuneScape
+	MouseMove width/2, height/2
+
+	Send {Up down}
+	Sleep 500
+	Send {Up up}
+
+	Send {PgDn down}
+	Sleep 1500
+	Send {PgDn up}
+}

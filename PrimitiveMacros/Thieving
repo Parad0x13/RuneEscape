@@ -1,0 +1,51 @@
+#include ImageManagement
+#include MiscFunctions
+
+steal() {
+	MouseGetPos xpos, ypos
+	loop {
+		deterministicallyFind([[xpos, ypos]], ["Text_Steal.png"])
+		Click
+		Sleep 3000
+		emptyBackpackSlot(1)
+		MouseMove %xpos%, %ypos%
+	}
+}
+
+pickpocketFromFoppishPierre() {
+	loop {
+		menuSelect(2)
+		Sleep 1000 
+	}
+}
+
+coshingVolunteer() {
+	instance := getLocations(["Coshing Volunteer Location"])
+	MouseGetPos xpos, ypos
+	MouseMove -100, -100, 5, R
+
+	Loop {
+TryToLure:
+		MouseMove %xpos%, %ypos%
+		menuSelect(3)
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_Parad0x1337.png", 10) = false)
+			Goto TryToLure
+ContinueTalking:
+		Send {Space}
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_OhNo.png", 10) = false)
+			Goto ContinueTalking
+		Send {Space}
+
+		MouseMove %xpos%, %ypos%
+		menuSelect(4)
+		Loop 6 {
+			MouseMove %xpos%, %ypos%
+			menuSelect(2)
+		}
+	}
+}
+
+thievingMacro() {
+	;steal()
+	coshingVolunteer()
+}

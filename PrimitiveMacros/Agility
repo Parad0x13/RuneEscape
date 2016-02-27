@@ -1,0 +1,149 @@
+#include Settings
+#include Camera
+#include ImageManagement
+
+;	Automate Agility Course
+;		-  Details for each course requirements in Settings
+automateAgilityCourse() {
+	resetCamera()
+	course := agilityCourses[CurrentAgilityCourse]
+	loop {
+		loop % course.MaxIndex() {
+			deterministicallyFind([[course[A_Index][1], course[A_Index][2]]], [course[A_Index][3]])
+			Click
+		}
+	}
+}
+
+;	Summer Pies!!! If your agility is below 85
+;	Start at end of course under pipe that drops you in from the top of the building
+automateAdvancedGnomeAgilityCourse() {
+	resetCamera()
+	lastSummerPieIndex := 1
+	Loop {
+		deterministicallyFind([[365, 570]], ["Text_WalkAcrossLogBalance.png"])
+		Click
+		deterministicallyFind([[995, 782]], ["Text_ClimbOverObstacleNet.png"])
+		Click
+		deterministicallyFind([[852, 646]], ["Text_ClimbTreeBranch.png"])
+		Click
+TryToGoUpTree:
+		deterministicallyFind([[893, 607], [955, 589]], ["Text_ClimbUp.png"])
+		Click
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_GnomeTrainer.png", 25)) {
+			lastSummerPieIndex := findInBackpack("Text_Eat.png", lastSummerPieIndex)
+			Click
+			Sleep 2500
+			Goto TryToGoUpTree
+		}
+		deterministicallyFind([[1340, 695]], ["Text_Signpost.png"])
+		Click
+		deterministicallyFind([[896, 144]], ["Text_Pole.png"])
+ContinueTryingPole:
+		Click
+		Sleep 5000
+		if(findImage(MOUSELOCATION, MOUSELOCATION, "Text_Pole.png", 10) = true) {		; This is because sometime you fail the Signpost and you need to take a long breather
+			Goto ContinueTryingPole
+		}
+		deterministicallyFind([[860, 467], [912, 467], [969, 467]], ["Text_Barrier.png"])
+		Click
+	}
+}
+
+;	[WARNING] This isn't yet finished, you can still fail after trying to cross the beam
+;	Need to be level 90
+;	Start after doing the first swing on rope swing obstacle to the left
+automateAdvancedBarbarianAgilityCourse() {
+	resetCamera()
+	lastSummerPieIndex := 1
+	Loop {
+		output := deterministicallyFind([[920, 720], [968, 630]], ["Text_WalkAcrossLogBalance.png", "Text_SwingOnRopeSwing.png"])
+		if(output[2] = "Text_SwingOnRopeSwing.png")
+			Goto SwingOnRope
+		Click
+		deterministicallyFind([[760, 810], [587, 564]], ["Text_RunUpWall.png"])		; Can fall off log even at level 90+
+		Click
+		deterministicallyFind([[890, 470]], ["Text_ClimbUpWall.png"])
+		Click
+TryFireSpringDevice:		; It appears you can fail here... not sure how. Maybe it's lag
+		deterministicallyFind([[795, 540], [964, 600]], ["Text_FireSpringDevice.png"])
+		Click
+		Sleep 7500
+TryCrossBeam:
+		output := deterministicallyFind([[1044, 550], [1065, 550], [964, 600]], ["Text_Cross.png", "Text_Jump.png", "Text_SlideDownRoof.png", "Text_FireSpringDevice.png"])
+		Click
+		if(output[2] = "Text_FireSpringDevice.png")
+			Goto TryFireSpringDevice
+		if(output[2] != "Text_SlideDownRoof.png") {
+			Sleep 250
+			Goto TryCrossBeam
+		}
+		deterministicallyFind([[1365, 580]], ["Text_SwingOnRopeSwing.png"])
+SwingOnRope:
+		Click
+		Sleep 6000
+		; For some reason (maybe lag) instead of swinging on rope you'll just walk to it
+	}
+}
+
+;	Ape Atoll Agility Course requires some dynamic functions not allowed by automateAgilityCourse()
+;	Ape Atoll Agility Course Requirments:
+;		- Already have the first object in the course clicked (Stepping Stone)
+automateApeAtollAgilityCourse() {
+	resetCamera()
+	loop {
+DoClimbLadder:
+		output := deterministicallyFind([[925, 600], [775, 895]], ["Text_Climb.png", "Text_Stone.png"])
+		if(output[2] = "Text_Stone.png") {
+			Click
+			Sleep 3000
+			goto DoClimbLadder
+		}
+		Click
+		output := deterministicallyFind([[925, 600], [775, 895]], ["Text_Swing.png", "Text_Stone.png"])
+		if(output[2] = "Text_Stone.png") {
+			Click
+			Sleep 3000
+			goto DoClimbLadder
+		}
+		Click
+DoSlope:
+		output := deterministicallyFind([[920, 530], [775, 895]], ["Text_Slope.png", "Text_Stone.png"])
+		if(output[2] = "Text_Stone.png") {
+			Click
+			Sleep 5000
+			goto DoClimbLadder
+		}
+		Click
+		Sleep 3000
+		output := deterministicallyFind([[850, 600], [920, 530]], ["Text_Unblock.png", "Text_Slope.png"])
+		if(output[2] = "Text_Slope.png") {
+			Sleep 3000
+			goto DoSlope
+		}
+		Click 1140, 720
+		deterministicallyFind([[1475, 1000]], ["Text_Swing.png"])
+		Click
+		output := deterministicallyFind([[1030, 375], [1025, 545]], ["Text_Tree.png", "Text_Stone.png"])
+		if(output[2] = "Text_Stone.png") {
+			Sleep 3000
+			goto DoClimbLadder
+		}
+		Click
+		deterministicallyFind([[25, 810], [300, 587]], ["Text_Stone.png", "Text_Stone.png"])
+		Click
+	}
+}
+
+;	Start after climbing the trellis once
+;	Be in standard camera reset for best results
+automateYanilleTrellisClimbing() {
+	locations := getLocations(["Ladder Down", "Trellis"])
+	menuSelect(1)			; This clicks the Trellis that you right clicked on so that the macro can start
+	loop {
+		deterministicallyFind([[locations[1][1], locations[1][2]]], ["Text_Ladder.png"])
+		Click
+		deterministicallyFind([[locations[2][1], locations[2][2]]], ["Text_Trellis.png"])
+		Click
+	}
+}

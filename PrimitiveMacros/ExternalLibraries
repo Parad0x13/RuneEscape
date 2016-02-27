@@ -1,0 +1,11 @@
+ToRGB(color) {
+	return { "r": (color >> 16) & 0xFF, "g": (color >> 8) & 0xFF, "b": color & 0xFF }
+}
+
+Compare(c1, c2, vary = 20) {
+	rdiff := Abs(c1.r - c2.r)
+	gdiff := Abs(c1.g - c2.g)
+	bdiff := Abs(c1.b - c2.b)
+
+	return rdiff <= vary && gdiff <= vary && bdiff <= vary
+}

@@ -1,0 +1,33 @@
+forceOpenObelisk(x, y) {
+	Loop {
+		output := deterministicallyFind([[x, y]], ["Text_Obelisk.png", "Text_Summoning.png"])
+		Click
+		if(output[2] = "Text_Summoning.png")
+			return true
+		Sleep 500
+	}
+}
+
+automateSummoning() {
+	resetCamera()
+	itemName := "Text_SwampLizard.png"
+	itemLocation := [790, 565]
+	Loop {
+		deterministicallyFind([[970, 480]], ["Text_Magestix.png"])
+		menuSelect(3)
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_Shop.png"])
+		Loop 10
+			Click WheelDown
+		deterministicallyFind([itemLocation], [itemName])
+		menuSelect(5)
+		Click 1200, 385
+		forceOpenObelisk(1080, 540)
+		executeProcessingInProcessingMenu()
+		Sleep 2000
+
+		deterministicallyFind([[1895, 905]], ["Text_Summon.png"])
+		menuSelect(2)
+		Click 1080, 540
+		executeProcessingInProcessingMenu()
+	}
+}

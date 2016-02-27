@@ -1,0 +1,105 @@
+;;;	It appears that global variables cannot be added to the
+;;;	start of each module, they just won't work for some for
+;;;	some very strange reason. Instead I'm making all global
+;;;	variables here so that hopefully that problem will be averted
+
+;;;	---[Standard Settings]---	;;;
+
+global MOUSELOCATION := 666666
+
+initFile = config.ini
+userSettings = BryanPC
+
+global var := Object()
+
+IniRead, StandardVariables, %initFile%, StandardVariables
+loop parse, StandardVariables, `n,`r
+{
+	StringSplit, out, A_LoopField, '='
+	;%out1% = %out2%
+	var.insert(out1, out2)
+}
+
+IniRead, %userSettings%, %initFile%, %userSettings%
+loop parse, %userSettings%, `n,`r
+{
+	StringSplit, out, A_LoopField, '='
+	;%out1% = %out2%
+	var.insert(out1, out2)
+}
+
+;;;	---[Agility Settings]---	;;;
+
+global BurthorpeAgilityCourse := 1
+global GnomeStrongholdAgilityCourse := 2
+global BarbarianOutpostAgilityCourseCrumblingWall := 3
+global CurrentAgilityCourse := GnomeStrongholdAgilityCourse
+
+global agilityCourses := Array()
+
+;	Burthorpe Agility Course Requirements:
+;		- Stand where 'Jump-down Ledge' leaves you at the end of the course
+agilityCourses[BurthorpeAgilityCourse] := Array()
+agilityCourses[BurthorpeAgilityCourse].Insert([1131, 516, "Text_WalkLogBeam.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([973, 349, "Text_ClimbUpWall.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([767,  465, "Text_WalkAcrossBalancingLedge.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([906, 667, "Text_ClimbOverObstacleLowWall.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([1079, 550, "Text_SwingOnRopeSwing.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([983, 642, "Text_SwingAcrossMonkeyBars.png"])
+agilityCourses[BurthorpeAgilityCourse].Insert([914, 559, "Text_JumpDownLedge.png"])
+
+;	Gnome Stronghold Agility Course Requirements:
+;		- Stand at the end of the tube (last obstacle) that is closest to the log walk
+agilityCourses[GnomeStrongholdAgilityCourse] := Array()
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([459, 643, "Text_WalkAcrossLogBalance.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([995, 782, "Text_ClimbOverObstacleNet.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([852, 646, "Text_ClimbTreeBranch.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([1227, 552, "Text_WalkOnBalancingRope.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([1206, 589, "Text_ClimbDownTreeBranch.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([739, 33, "Text_ClimbOverObstacleNet.png"])
+agilityCourses[GnomeStrongholdAgilityCourse].Insert([920, 324, "Text_SqueezeThroughObstaclePipe.png"])
+
+;	Barbarian Outpost Agility Course Crumbling Wall Requirements:
+;		- Stand after the 2nd crumbling wall
+agilityCourses[BarbarianOutpostAgilityCourseCrumblingWall] := Array()
+agilityCourses[BarbarianOutpostAgilityCourseCrumblingWall].Insert([650, 520, "Text_ClimbOverCrumblingWall.png"])
+agilityCourses[BarbarianOutpostAgilityCourseCrumblingWall].Insert([1230, 545, "Text_ClimbOverCrumblingWall.png"])
+
+;;;	---[GrandExchange Settings]---	;;;
+
+global GE_SlotLocations := Array()
+GE_SlotLocations.Insert(Array([780, 510], [840, 510]))
+GE_SlotLocations.Insert(Array([935, 510], [995, 510]))
+GE_SlotLocations.Insert(Array([1090, 510], [1150, 510]))
+GE_SlotLocations.Insert(Array([780, 630], [840, 630]))
+GE_SlotLocations.Insert(Array([935, 630], [995, 630]))
+GE_SlotLocations.Insert(Array([1090, 630], [1150, 630]))
+global GE_Status_Buy := 500
+global GE_Status_Sell := 501
+global GE_Status_Empty := 502
+global GE_Status_Unknown := 503
+global GE_Status_Filled := 504
+global GE_Status_Unfilled := 505
+global GE_Status_PartiallyFilled := 506
+global GE_Button_Buy := 600
+global GE_Button_Sell := 601
+global GE_Slot_Status := Array()
+loop 6
+	GE_Slot_Status.Insert(GE_Status_Unknown)
+global GE_StatusIndicatorLocations := Array()
+GE_StatusIndicatorLocations.Insert([810, 452])
+GE_StatusIndicatorLocations.Insert([967, 452])
+GE_StatusIndicatorLocations.Insert([1127, 452])
+GE_StatusIndicatorLocations.Insert([810, 572])
+GE_StatusIndicatorLocations.Insert([967, 572])
+GE_StatusIndicatorLocations.Insert([1127, 572])
+global GE_Slot_FilledStatus := Array()
+loop 6
+	GE_Slot_FilledStatus.Insert(GE_Status_Unknown)
+global GE_FilledStatusIndicatorLocations := Array()
+GE_FilledStatusIndicatorLocations.Insert([800, 530])
+GE_FilledStatusIndicatorLocations.Insert([970, 530])
+GE_FilledStatusIndicatorLocations.Insert([1120, 530])
+GE_FilledStatusIndicatorLocations.Insert([800, 650])
+GE_FilledStatusIndicatorLocations.Insert([970, 650])
+GE_FilledStatusIndicatorLocations.Insert([1120, 650])

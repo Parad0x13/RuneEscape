@@ -1,0 +1,65 @@
+#include Settings
+#include Camera
+#include ImageManagement
+
+;	Must be in Neitiznot
+;	Must be standing directly in front of the Clay Oven
+cookingMacro() {
+	resetCamera()
+	openBank(750, 640, "Text_Bank_Blue.png")
+	inBankEmptyBackpack()
+	withdrawBankItem("Raw shark", 27)
+	savePresetOne(1025, 550, "Text_Bank_Blue.png")
+	exitBank()
+	Click 1245, 430
+
+	Loop {
+		openBank(750, 640, "Text_Bank_Blue.png")
+		loadBankPreset1()
+		deterministicallyFind([[1750, 660]], ["Text_Use.png"])
+		menuSelect(1)
+		deterministicallyFind([[1250, 390]], ["Text_Raw.png"])
+		Click
+		executeProcessingInProcessingMenu()
+		Sleep 30000		; Prevents errorOut() from happening due to lag
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "XButton.png")
+	}
+}
+
+;	Must make sure you are standing in the correct location at the G.E. out of bank
+;	You can find it by going to the upper-left bank area and by standing south
+;		clicking on the banker and when you walk to him that's the location
+;		Also see reference image (BankReference.png) for position verification
+cookingMacroAtGE() {
+	resetCamera()
+	openBank(970, 477, "Text_BankBanker.png")
+	inBankEmptyBackpack()
+	withdrawBankItem("Oak logs", 1)
+	withdrawBankItem("Raw lobster", 27)
+	savePresetOne(970, 477, "Text_BankBanker.png")
+	loop {
+		loadBankPreset1()
+		Sleep 2500
+		walkHere(966, 742)
+		Sleep 3000
+		moveToBackpackSlot(1)
+		menuSelect(2)
+		moveToBackpackSlot(2)
+		safeClick()
+		Sleep 2000
+		deterministicallyFind([[1022, 544], [968, 544]], ["Text_Fire.png"])
+		safeClick()
+		ensureAreInProcessingMenu()
+		executeProcessingInProcessingMenu()
+		Sleep 10000
+		bankFound := deterministicallyFind([[1030, 325], [975, 325]], ["Text_BankBanker.png"])	; The menu will block the banker, so when cooking is finished you'll auto bank
+		menuSelect(4)
+		Sleep 3000
+		openBank(970, 477, "Text_BankBanker.png")
+
+		if(runIndex = 1)
+			runIndex = 2
+		else
+			runIndex = 1
+	}
+}

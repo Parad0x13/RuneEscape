@@ -1,0 +1,65 @@
+#include Settings
+#include MiscFunctions
+
+;	strength - how many times to try before giving up. It doesn't always find the first time
+findImage(x, y, image, strength) {
+	WinGetPos,,, width, height, A
+	if(x = MOUSELOCATION or y = MOUSELOCATION)
+		MouseGetPos x, y
+	Loop %strength% {
+		MouseMove x, y, 3
+		ImageSearch, FoundX, FoundY, 0, 0, width, height, *1 resources/%image%
+		if ErrorLevel = 0
+			return true
+		else if ErrorLevel = 2
+			MsgBox, Error with image search. Looked for %image%
+	}
+	return false
+}
+
+;	Will deterministically search for each image in imageArray at each point in pointArray
+;	Will return an array: [point, image]
+;	bufferTime allows image searching for longer than the timeoutValue
+deterministicallyFind(pointArray, imageArray) {
+start := A_TickCount
+BeginDeterministicSearch:
+	delta := A_TickCount - start
+	if(delta > var.TimeoutValue)
+		errorOut("Cannot find image required")
+
+	for pointIndex, point in pointArray {
+		for imageIndex, image in imageArray {
+			if findImage(point[1], point[2], image, 1) = 1
+				return [pointArray[pointIndex], imageArray[imageIndex]]
+		}
+	}
+	goto BeginDeterministicSearch
+}
+
+;	Will deterministically ensure image does not appear at point (not array driven)
+deterministicallyLoose(x, y, image) {
+BeginDeterministicLoose:
+	if(findImage(x, y, image, 10) = true)
+		goto BeginDeterministicLoose
+}
+
+;	Will scan screen until tooltip presents image(s) requested
+;	bounds variable will be formatted like: [[UpperLeftX, UpperLeftY], [LowerRightX, LowerRightY]
+;	- The limit is there so that we can search if game logged out while search was happening
+;		-- I also tried this with confined image search bounds but it was so fast it missed everything and never worked
+deterministicallySearchWithLimit(bounds, imageArray, limit) {
+	xStep := 25
+	yStep := 50
+
+	Loop %limit% {
+		Random x, bounds[1][1], bounds[2][1]
+		Random y, bounds[1][2], bounds[2][2]
+		MouseMove x, y, 1
+
+		for imageIndex, image in imageArray {
+			if(findImage(x, y, image, 2) = 1)
+				return true
+		}
+	}
+	return false
+}

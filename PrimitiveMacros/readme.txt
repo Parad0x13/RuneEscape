@@ -1,0 +1,1 @@
+So my account was banned for botting on 03Mar15 lol. Guess they finally got sick of my nonsense : 3 Oh well, it's to be expected. Some of these scripts worked really really well, some not so much. It was fun writing them though

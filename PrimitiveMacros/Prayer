@@ -1,0 +1,41 @@
+;	Have Preset 1 set to your desired prayer items
+;	Already have that preset pulled out
+;	Already have the person's house you wish to use preset into Yanille's portal
+;	Have preset position data input into the script before loading
+;	firstAlterLoc is where the alter is located when you warp in
+;	secondAlterLoc is where the alter is when you walk to it
+;		Ensure secondAlterLoc is farthest away from other players, otherwise misclick might occur
+automatePrayer() {
+	resetCamera()
+	firstAlterLoc := [972, 145]
+	secondAlterLoc := [975, 460]
+	amuletOfGloryLoc := [686, 330]
+	itemToLose := "Text_Bury.png"
+
+	Loop {
+		teleportToLodestone("Yanille")
+		deterministicallyFind([[1863, 363]], ["Text_Portal.png"])
+		Sleep 1500
+		deterministicallyFind([[1863, 363]], ["Text_Portal.png"])
+		menuSelect(4)
+		deterministicallyFind([[MOUSELOCATION, MOUSELOCATION]], ["Text_EnterName.png"])
+		Click 965, 834
+		deterministicallyFind([firstAlterLoc], ["Text_Altar.png"])
+		Sleep 1500
+		deterministicallyFind([firstAlterLoc], ["Text_Altar.png"])
+		Click
+		Sleep 5000
+
+		deterministicallyFind([secondAlterLoc], ["Text_Altar.png"])
+		menuSelect(2)
+
+		deterministicallyLoose(1894, 907, itemToLose)
+
+		deterministicallyFind([amuletOfGloryLoc], ["Text_AmuletOfGlory.png"])
+		menuSelect(2)
+		openBank(1545, 664, "Text_Bank.png")
+		loadBankPreset1()
+		deterministicallyFind([[1894, 907]], [itemToLose])
+		Sleep 1000
+	}
+}

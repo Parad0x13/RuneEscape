@@ -1,0 +1,35 @@
+#include Bank
+#include Camera
+
+; To get the camera correct go into the smithing place in Lumbridge then click on the chest
+;		- Assumes you are not in bank (chest)
+automateSmithingInLumbridge(rawItemName, rawItemCount, sleepDelay, smithingItemX, smithingItemY) {
+	standardResetCamera()
+	openBank(1010, 535, "Text_UseBankChest.png")
+	inBankEmptyBackpack()
+	withdrawBankItem(rawItemName, rawItemCount)
+	savePresetOne(1010, 535, "Text_UseBankChest.png")
+	loop {
+		ensureAreInBank()
+		loadBankPreset1()
+		Sleep 2000		; Make sure walking animation finished
+		walkHere(1435, 680)
+		deterministicallyFind([[1390, 590]], ["Text_Smith.png"])
+		Click
+		deterministicallyFind([[var.RS_ProcessingMenuIdentifierX, var.RS_ProcessingMenuIdentifierY]], ["Text_Smithing.png"])
+		MouseMove %smithingItemX%, %smithingItemY%
+		safeClick()
+		MouseMove 1080, 680
+		safeClick()
+		Sleep sleepDelay
+		; To make sure the menu closes (ensuring we haven't ran out of resources)
+		; we check to see if we can see the anvil which is hidden by the menu by default
+		; This ensures that when resources run out the script will error out
+		deterministicallyFind([[1020, 550]], ["Text_Smith.png"])
+		Click 328, 428
+	}
+}
+
+automateSmithing() {
+	automateSmithingInLumbridge("Steel Bar", 25, 14000, 750, 650)
+}

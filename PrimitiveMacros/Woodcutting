@@ -1,0 +1,34 @@
+#include Settings
+#include Bank
+#include ImageManagement
+
+; Stand against the ivy cutting wall (north side) in Elf City
+ivyCutting() {
+	resetCamera()
+	Loop {
+		deterministicallyFind([[875, 500], [925, 500], [975, 500], [1025, 500], [1075, 500]], ["Text_ChopIvy.png"])
+		Click
+		Sleep 10000
+		ensureAreInGame()
+	}
+}
+
+;	Draynor Willow autocutting/autobanking
+;		- Make sure you are on the right side of the topmost willow tree outside the bank
+;		- Luckily the banker can be wallhacked : 3
+draynorAutoWoodcuttingAutoBanking() {
+	resetCamera()
+	loop {
+		; ChopDownWillow needed as there is a tree visible while walking down to the willow that can cause issues
+		loop 16 {
+			deterministicallyFind([[900, 560]], ["Text_ChopDownWillow.png"])
+			Click
+			Sleep 15000
+		}
+		deterministicallyFind([[1380, 300]], ["Text_BankBanker.png"])
+		Click
+		inBankEmptyBackpack()
+		deterministicallyFind([[435, 825]], ["Text_ChopDownWillow.png"])
+		Click
+	}
+}

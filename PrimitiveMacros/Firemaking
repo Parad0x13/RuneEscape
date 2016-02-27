@@ -1,0 +1,56 @@
+#include Settings
+#include Camera
+#include ImageManagement
+#include MiscFunctions
+
+; ShantayPassLocation image for location reference
+; Have preset 1 already set to proper log type
+; People have their STUPID clan avatars and pets blocking the fire sometimes
+;	because of this I have to burn with another menu causing me to walk away from bank
+firemakingMacro() {
+	resetCamera()
+	Loop {
+		openBank(1015, 540, "Text_Chest.png")
+		loadBankPreset1()
+		deterministicallyFind([[1740, 690]], ["Text_Craft.png"])
+		menuSelect(3)
+		deterministicallyFind([[965, 600], [910, 545]], ["Text_Fire.png"])
+		Click
+		Sleep 5000
+		deterministicallyLoose(MOUSELOCATION, MOUSELOCATION, "FiremakingIcon.png")
+	}
+}
+
+;	Must make sure you are standing in the correct location at the G.E. out of bank
+;	You can find it by going to the upper-left bank area and by standing south
+;		clicking on the banker and when you walk to him that's the location
+;		See reference image (CookingBankReference.png) for position verification
+;			it's correct even though it's for Cooking
+firemakingAtGE() {
+	resetCamera()
+	openBank(970, 477, "Text_BankBanker.png")
+	inBankEmptyBackpack()
+	withdrawBankItem("Mahogany logs", 28)
+	savePresetOne(970, 477, "Text_BankBanker.png")
+	Loop {
+		loadBankPreset1()
+		Sleep 1000
+		walkHere(966, 742)
+		Sleep 3000
+		moveToBackpackSlot(1)
+		menuSelect(2)
+		Sleep 5000
+		walkHere(965, 490)
+		Sleep 2000
+		moveToBackpackSlot(2)
+		safeClick()
+		deterministicallyFind([[970, 448]], ["Text_ChooseATool.png"])
+		Click 1065, 550
+		Sleep 90000
+
+		bankFound := deterministicallyFind([[1030, 350], [975, 350]], ["Text_BankBanker.png"])
+		menuSelect(4)
+		Sleep 3000
+		openBank(970, 477, "Text_BankBanker.png")
+	}
+}

@@ -2,6 +2,8 @@
 #include ProcessManager
 #include ImageManagement
 
+#include ConstructionHUD
+
 presentHUD() {
 	Gui, Show, x500 y200 h600 w800, %RuneEscapeVersion%
 	Gui, Add, Button, x690 y560 w100 h30 gRunPrimitive, Primitive Macros
@@ -15,6 +17,13 @@ presentHUD() {
 	Gui, Add, Picture, x750 y10 w32 h32 gRunLocationData BackgroundTrans, resources\target.png
 	Gui, Add, Picture, x731 y19 w16 h16 gRunLocationDataHelp BackgroundTrans, resources\question.png
 	Gui, Add, Picture, x745 y60 w48 h40 gRunMacroCreator BackgroundTrans, resources\MacroCreatorIcon.png
+
+	Gui, Add, Button, x200 y200 gConstructionHud, Construction
+}
+
+ConstructionHUD() {
+	Gui Destroy
+	presentConstructionHUD()
 }
 
 RunPrimitive() {
@@ -74,6 +83,7 @@ ParentDirectory(n) {
 }
 
 RunLocationData() {
+	Gui Destroy
 	registerProcess("LocationData.ahk")
 }
 

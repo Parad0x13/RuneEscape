@@ -44,3 +44,10 @@ BeginDeterministicSearch:
 	}
 	goto BeginDeterministicSearch
 }
+
+;	Will deterministically ensure image does not appear at point (not array driven)
+deterministicallyLose(x, y, image) {
+BeginDeterministicLose:
+	if(findImage(x, y, image, 10) = true)
+		goto BeginDeterministicLose
+}

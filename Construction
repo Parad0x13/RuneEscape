@@ -1,0 +1,57 @@
+#include ProcessManager
+#include MiscFunctions
+
+MahoganyTable() {
+	Gui Destroy
+
+	Loop {
+		CreateMahoganyTable()
+		CreateMahoganyTable()
+		SendButlerToBank()
+		CreateMahoganyTable()
+
+		deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["IsPlayingCheck"])
+	}
+}
+
+CreateMahoganyTable() {
+	IniRead varMahoganyTableUpLeftX, %iniLocation%, Construction, MahoganyTableUpLeftX
+	IniRead varMahoganyTableUpLeftY, %iniLocation%, Construction, MahoganyTableUpLeftY
+	IniRead varMahoganyTableWidth, %iniLocation%, Construction, MahoganyTableWidth
+	IniRead varMahoganyTableHeight, %iniLocation%, Construction, MahoganyTableHeight
+
+	IniRead varMahoganyTableSelectUpLeftX, %iniLocation%, Construction, MahoganyTableSelectUpLeftX
+	IniRead varMahoganyTableSelectUpLeftY, %iniLocation%, Construction, MahoganyTableSelectUpLeftY
+	IniRead varMahoganyTableSelectWidth, %iniLocation%, Construction, MahoganyTableSelectWidth
+	IniRead varMahoganyTableSelectHeight, %iniLocation%, Construction, MahoganyTableSelectHeight
+
+	randClick(varMahoganyTableUpLeftX, varMahoganyTableUpLeftY, varMahoganyTableWidth, varMahoganyTableHeight, 1)
+	menuSelect(2)
+	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["Text_SelectAPieceOfFurnitureToBuild"])
+	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["Icon_AvailableMahoganyTable"])			; Ensures we don't keep trying to build if we don't have enough materials
+	randClick(varMahoganyTableSelectUpLeftX, varMahoganyTableSelectUpLeftY, varMahoganyTableSelectWidth, varMahoganyTableSelectHeight, 0)
+	deterministicallyLose(MOUSELOCATION, MOUSELOCATION, "Text_SelectAPieceOfFurnitureToBuild")
+	emulateHuman(2000, 4000)
+	randClick(varMahoganyTableUpLeftX, varMahoganyTableUpLeftY, varMahoganyTableWidth, varMahoganyTableHeight, 1)
+	menuSelect(2)
+	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["Text_ReallyRemoveIt"])
+	Send {Numpad1}
+	emulateHuman(2000, 4000)
+}
+
+SendButlerToBank() {
+	IniRead varMahoganyTableButlerTopX, %iniLocation%, Construction, MahoganyTableButlerTopX
+	IniRead varMahoganyTableButlerTopY, %iniLocation%, Construction, MahoganyTableButlerTopY
+	IniRead varMahoganyTableButlerBottomX, %iniLocation%, Construction, MahoganyTableButlerBottomX
+	IniRead varMahoganyTableButlerBottomY, %iniLocation%, Construction, MahoganyTableButlerBottomY
+	IniRead varMahoganyTableButlerLeftX, %iniLocation%, Construction, MahoganyTableButlerLeftX
+	IniRead varMahoganyTableButlerLeftY, %iniLocation%, Construction, MahoganyTableButlerLeftY
+	IniRead varMahoganyTableButlerRightX, %iniLocation%, Construction, MahoganyTableButlerRightX
+	IniRead varMahoganyTableButlerRightY, %iniLocation%, Construction, MahoganyTableButlerRightY
+
+	deterministicallyFind([[varMahoganyTableButlerTopX, varMahoganyTableButlerTopY], [varMahoganyTableButlerBottomX, varMahoganyTableButlerBottomY], [varMahoganyTableButlerLeftX, varMahoganyTableButlerLeftY], [varMahoganyTableButlerRightX, varMahoganyTableButlerRightY]], ["Text_TalkToButler"])
+	menuSelect(2)
+	Sleep 1000
+	Send {Numpad1}
+	emulateHuman(2000, 4000)
+}

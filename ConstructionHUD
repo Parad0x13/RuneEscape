@@ -1,0 +1,104 @@
+#include Construction
+#include Calibrate
+
+presentConstructionHUD() {
+	Gui, Show, x500 y200 w600 h400, %RuneEscapeVersion% Construction
+
+	Gui, Add, Button, x10 y10 gMahoganyTable, Create Mahogany Tables
+
+	IniRead varMahoganyTableUpLeftX, %iniLocation%, Construction, MahoganyTableUpLeftX
+	IniRead varMahoganyTableUpLeftY, %iniLocation%, Construction, MahoganyTableUpLeftY
+	IniRead varMahoganyTableWidth, %iniLocation%, Construction, MahoganyTableWidth
+	IniRead varMahoganyTableHeight, %iniLocation%, Construction, MahoganyTableHeight
+	Gui, Add, Button, x10 y50 gCalibrateMahoganyTableSquare, Calibrate Mahogany Table Square (%varMahoganyTableUpLeftX%, %varMahoganyTableUpLeftY%) %varMahoganyTableWidth%x%varMahoganyTableHeight%
+
+	IniRead varMahoganyTableSelectUpLeftX, %iniLocation%, Construction, MahoganyTableSelectUpLeftX
+	IniRead varMahoganyTableSelectUpLeftY, %iniLocation%, Construction, MahoganyTableSelectUpLeftY
+	IniRead varMahoganyTableSelectWidth, %iniLocation%, Construction, MahoganyTableSelectWidth
+	IniRead varMahoganyTableSelectHeight, %iniLocation%, Construction, MahoganyTableSelectHeight
+	Gui, Add, Button, x10 y75 gCalibrateMahoganyTableSelectSquare, Calibrate Mahogany Table Select Square (%varMahoganyTableSelectUpLeftX%, %varMahoganyTableSelectUpLeftY%) %varMahoganyTableSelectWidth%x%varMahoganyTableSelectHeight%
+
+	IniRead varMahoganyTableButlerTopX, %iniLocation%, Construction, MahoganyTableButlerTopX
+	IniRead varMahoganyTableButlerTopY, %iniLocation%, Construction, MahoganyTableButlerTopY
+	Gui, Add, Button, x10 y100 gCalibrateButlerTop, Calibrate Butler Top Position (%varMahoganyTableButlerTopX%, %varMahoganyTableButlerTopY%)
+
+	IniRead varMahoganyTableButlerBottomX, %iniLocation%, Construction, MahoganyTableButlerBottomX
+	IniRead varMahoganyTableButlerBottomY, %iniLocation%, Construction, MahoganyTableButlerBottomY
+	Gui, Add, Button, x10 y125 gCalibrateButlerBottom, Calibrate Butler Bottom Position (%varMahoganyTableButlerBottomX%, %varMahoganyTableButlerBottomY%)
+
+	IniRead varMahoganyTableButlerLeftX, %iniLocation%, Construction, MahoganyTableButlerLeftX
+	IniRead varMahoganyTableButlerLeftY, %iniLocation%, Construction, MahoganyTableButlerLeftY
+	Gui, Add, Button, x10 y150 gCalibrateButlerLeft, Calibrate Butler Left Position (%varMahoganyTableButlerLeftX%, %varMahoganyTableButlerLeftY%)
+
+	IniRead varMahoganyTableButlerRightX, %iniLocation%, Construction, MahoganyTableButlerRightX
+	IniRead varMahoganyTableButlerRightY, %iniLocation%, Construction, MahoganyTableButlerRightY
+	Gui, Add, Button, x10 y175 gCalibrateButlerRight, Calibrate Butler Right Position (%varMahoganyTableButlerRightX%, %varMahoganyTableButlerRightY%)
+}
+
+CalibrateMahoganyTableSquare() {
+	Gui Destroy
+	rectangle := grab_rectangle()
+	x := rectangle[1]
+	y := rectangle[2]
+	w := rectangle[3]
+	h := rectangle[4]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableUpLeftX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableUpLeftY
+	IniWrite, %w%, %iniLocation%, Construction, MahoganyTableWidth
+	IniWrite, %h%, %iniLocation%, Construction, MahoganyTableHeight
+	presentConstructionHUD()
+}
+
+CalibrateMahoganyTableSelectSquare() {
+	Gui Destroy
+	rectangle := grab_rectangle()
+	x := rectangle[1]
+	y := rectangle[2]
+	w := rectangle[3]
+	h := rectangle[4]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableSelectUpLeftX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableSelectUpLeftY
+	IniWrite, %w%, %iniLocation%, Construction, MahoganyTableSelectWidth
+	IniWrite, %h%, %iniLocation%, Construction, MahoganyTableSelectHeight
+	presentConstructionHUD()
+}
+
+CalibrateButlerTop() {
+	Gui Destroy
+	point := grab_point()
+	x := point[1]
+	y := point[2]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableButlerTopX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableButlerTopY
+	presentConstructionHUD()
+}
+
+CalibrateButlerBottom() {
+	Gui Destroy
+	point := grab_point()
+	x := point[1]
+	y := point[2]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableButlerBottomX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableButlerBottomY
+	presentConstructionHUD()
+}
+
+CalibrateButlerLeft() {
+	Gui Destroy
+	point := grab_point()
+	x := point[1]
+	y := point[2]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableButlerLeftX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableButlerLeftY
+	presentConstructionHUD()
+}
+
+CalibrateButlerRight() {
+	Gui Destroy
+	point := grab_point()
+	x := point[1]
+	y := point[2]
+	IniWrite, %x%, %iniLocation%, Construction, MahoganyTableButlerRightX
+	IniWrite, %y%, %iniLocation%, Construction, MahoganyTableButlerRightY
+	presentConstructionHUD()
+}

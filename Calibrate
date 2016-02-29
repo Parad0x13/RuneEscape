@@ -4,37 +4,34 @@
 
 global tmp_loc := A_AppData . "/RuneEscape/tmp.png"
 
-calibrate_initialize()
-calibrate_initialize() {
-	nonCalibratedCount := 0
+grab_point() {
+	CoordMode Mouse, Screen
 
-	for index, item in calibratables {
-		image_loc := A_AppData . "/RuneEscape/" . item . ".png"
-		IfNotExist %image_loc%
-		{
-			nonCalibratedCount := nonCalibratedCount + 1
+	Loop {
+		MouseGetPos x, y
+		ToolTip Calibrating (Right Click), (x + 20), (y + 20), 1
+
+		if(GetKeyState("RButton", "P")) {
+			MouseGetPos x, y
+			return [x, y]
 		}
-	}
 
-	term := "resource"
-	if(nonCalibratedCount > 1)
-		term := "resources"
-	if(nonCalibratedCount > 0)
-		MsgBox [Warning] You have %nonCalibratedCount% uncalibrated %term%
+		Sleep 10	; So as not to peg CPU
+	}
 }
 
-calibrate(item) {
+grab_rectangle() {
 	Box_Init()
 	CoordMode Mouse, Screen
 	isDrawing := 0
 	downXLoc := 0
 	downYLoc := 0
 
-	MsgBox Oh No! A required resource is not yet calibrated!`n`nDraw a rectangle to calibrate %item%`n`nPress Esc to cancel
-
 	Loop {
+		MouseGetPos x, y
+		ToolTip Calibrating (Hold Shift), (x + 20), (y + 20), 1
+
 		if(isDrawing) {
-			MouseGetPos x, y
 			Box_Draw(downXLoc, downYLoc, x-downXLoc, y-downYLoc)
 		}
 
@@ -50,15 +47,9 @@ calibrate(item) {
 		else {
 			if(isDrawing) {
 				MouseGetPos x, y
-				success := ableToProcessRectangle(downXLoc, downYLoc, x-downXLoc, y-downYLoc)
-				if(!success) {
-					FileDelete %tmp_loc%
-					calibrate(item)
-				}
-				else {
-					FileMove %tmp_loc%, %A_AppData%/RuneEscape/%item%.png
-					return
-				}
+				Box_Destroy()
+				ToolTip
+				return [downXLoc, downYLoc, x - downXLoc, y - downYLoc]
 			}
 
 			isDrawing := 0
@@ -66,11 +57,35 @@ calibrate(item) {
 		}
 
 		if(GetKeyState("Esc", "P")) {
-			MsgBox No longer trying to calibrate %item%
-			return
+			MsgBox No longer trying to calibrate rectangle
+			Box_Destroy()
+			ToolTip
+			return [0, 0, 0, 0]
 		}
 
 		Sleep 10	; So as not to peg CPU
+	}
+}
+
+calibrate(item) {
+	Box_Init()
+	CoordMode Mouse, Screen
+	isDrawing := 0
+	downXLoc := 0
+	downYLoc := 0
+
+	MsgBox Oh No! A required resource is not yet calibrated!`n`nDraw a rectangle to calibrate %item%`n`nPress Esc to cancel
+
+	rectangle := grab_rectangle()
+
+	success := ableToProcessRectangle(rectangle[1], rectangle[2], rectangle[3], rectangle[4])
+	if(!success) {
+		FileDelete %tmp_loc%
+		calibrate(item)
+	}
+	else {
+		FileMove %tmp_loc%, %A_AppData%/RuneEscape/%item%.png
+		return
 	}
 }
 

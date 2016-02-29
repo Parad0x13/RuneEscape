@@ -1,8 +1,13 @@
 global PIDs := Object()
 
-registerProcess(process) {
-	Run %process%,,,PID
+registerProcess(process, period=0) {
+	Run %process%, CustomScripts,,PID
 	PIDs.insert(PID)
+
+	if(period > 0) {
+		Sleep period
+		Process, Close, %PID%
+	}
 }
 
 elegantlyCloseProcesses() {

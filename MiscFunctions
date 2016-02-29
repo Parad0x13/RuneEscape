@@ -1,7 +1,48 @@
+#include Settings
+#include ProcessManager
+
+emulateHuman(lowerPeriod, upperPeriod) {
+	possibleMovements := ["HumanMovements01.ahk", "HumanMovements02.ahk"]
+	Random selectedMovement, 1, possibleMovements.MaxIndex()
+
+	Random actualPeriod, lowerPeriod, upperPeriod
+
+	registerProcess(possibleMovements[selectedMovement], actualPeriod)
+	MouseMove -100, -100,, R	; This will ensure any right click menu will go away
+}
+
+tick() {
+	Sleep 500
+}
+
+randClick(x, y, w, h, clickType) {
+	Random randX, 0, w
+	Random randY, 0, h
+	MouseMove x + randX, y + randY
+
+	if(clickType == 0)
+		Click
+	if(clickType == 1)
+		Click right
+
+	tick()
+}
+
 errorOut(notice) {
 	Tooltip % notice
 	Loop {
 		SoundPlay, resources/Alarm.mp3, WAIT
 	}
 	Reload
+}
+
+menuSelect(optionIndex) {
+	Click right
+	sleep 100
+	delta := RS_RightClickMenuHeaderHeight + RS_RightClickMenuOptionHeight*optionIndex - RS_RightClickMenuOptionHeight/2
+	MouseMove 0, %delta%, 5, R
+	Click
+	MouseMove 0, -%delta%, 1, R
+
+	tick()
 }

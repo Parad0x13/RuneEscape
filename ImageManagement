@@ -13,6 +13,7 @@ findImage(x, y, image, strength) {
 		image_loc := A_AppData . "/RuneEscape/" . image . ".png"
 		IfNotExist %image_loc%
 		{
+			ToolTip
 			calibrate(image)
 			return findImage(x, y, image, strength)
 		}
@@ -38,8 +39,12 @@ BeginDeterministicSearch:
 
 	for pointIndex, point in pointArray {
 		for imageIndex, image in imageArray {
+			ToolTip Seeking %image%, 0, 0
 			if findImage(point[1], point[2], image, 1) = 1
+			{
+				ToolTip
 				return [pointArray[pointIndex], imageArray[imageIndex]]
+			}
 		}
 	}
 	goto BeginDeterministicSearch

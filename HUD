@@ -21,18 +21,22 @@ presentHUD() {
 	IniRead varSavedUserPassword, %iniLocation%, UserSettings, Password, %A_Space%
 	Gui, Add, Edit, x10 y65 w120 vUserPassword gPasswordChanged Password, %varSavedUserPassword%
 
-	Gui, Add, Button, x200 y200 gConstructionHud, Construction
+	Global MacroChoice
+	Gui, Add, DropDownList, x10 y95 w120 gMacroSelected vMacroChoice, Select A Macro||Construction
 }
-return
+
+MacroSelected() {
+	GuiControlGet MacroChoice
+
+	if(MacroChoice = "Construction") {
+		Gui Destroy
+		presentConstructionHUD()
+	}
+}
 
 PasswordChanged() {
 	GuiControlGet UserPassword
 	IniWrite, %UserPassword%, %iniLocation%, UserSettings, Password
-}
-
-ConstructionHUD() {
-	Gui Destroy
-	presentConstructionHUD()
 }
 
 RunPrimitive() {

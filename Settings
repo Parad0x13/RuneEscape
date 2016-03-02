@@ -2,7 +2,8 @@ global RuneEscapeVersion := "Rune Escape v0.1"
 global TimeoutValue := 60000
 global MOUSELOCATION := 666666
 
-global iniLocation := A_AppData . "\RuneEscape\settings.ini"
+global RuneEscapeAppData := A_AppData . "\RuneEscape\"
+global iniLocation := RuneEscapeAppData . "settings.ini"
 
 global RS_RightClickMenuHeaderHeight = 21
 global RS_RightClickMenuOptionHeight = 16

@@ -2,7 +2,7 @@
 #include ExtraTools/OCR/GDIp.ahk
 #include Settings
 
-global tmp_loc := A_AppData . "/RuneEscape/tmp.png"
+global tmp_loc := RuneEscapeAppData . "tmp.png"
 
 grab_point() {
 	CoordMode Mouse, Screen
@@ -84,7 +84,8 @@ calibrate(item) {
 		calibrate(item)
 	}
 	else {
-		FileMove %tmp_loc%, %A_AppData%/RuneEscape/%item%.png
+		new_loc := RuneEscapeAppData . item . ".png"
+		FileMove %tmp_loc%, %new_loc%
 		return
 	}
 }

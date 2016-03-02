@@ -1,5 +1,6 @@
 Menu, TRAY, Icon, resources/icon.ico
-FileCreateDir %A_AppData%/RuneEscape
+#include Settings
+FileCreateDir %RuneEscapeAppData%
 
 #include Calibrate
 #include HUD

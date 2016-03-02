@@ -1,7 +1,6 @@
 #include Settings
 #include ProcessManager
 #include ImageManagement
-
 #include ConstructionHUD
 
 presentHUD() {
@@ -9,8 +8,8 @@ presentHUD() {
 	Gui, Add, Button, x690 y560 w100 h30 gRunPrimitive, Primitive Macros
 	Gui, Add, Picture, x668 y568 w16 h16 gRunPrimitiveHelp BackgroundTrans, resources\question.png
 
-	Gui, Add, Button, x690 y528 w100 h30 gTempFiles, Temp Files
 	Gui, Add, Picture, x668 y536 w16 h16 gTempFilesHelp BackgroundTrans, resources\question.png
+	Gui, Add, Button, x690 y528 w100 h30 gTempFiles, Temp Files
 
 	Gui, Add, Button, x10 y20 w120 h40 gLaunchRunescape, Launch RuneScape
 	Gui, Add, Picture, x135 y31 w16 h16 gLaunchRunescapeHelp BackgroundTrans, resources\question.png
@@ -18,7 +17,17 @@ presentHUD() {
 	Gui, Add, Picture, x731 y19 w16 h16 gRunLocationDataHelp BackgroundTrans, resources\question.png
 	Gui, Add, Picture, x745 y60 w48 h40 gRunMacroCreator BackgroundTrans, resources\MacroCreatorIcon.png
 
+	Global UserPassword
+	IniRead varSavedUserPassword, %iniLocation%, UserSettings, Password, %A_Space%
+	Gui, Add, Edit, x10 y65 w120 vUserPassword gPasswordChanged Password, %varSavedUserPassword%
+
 	Gui, Add, Button, x200 y200 gConstructionHud, Construction
+}
+return
+
+PasswordChanged() {
+	GuiControlGet UserPassword
+	IniWrite, %UserPassword%, %iniLocation%, UserSettings, Password
 }
 
 ConstructionHUD() {
@@ -40,7 +49,7 @@ RunPrimitiveHelp() {
 }
 
 TempFiles() {
-	Run %A_AppData%/RuneEscape/
+	Run %RuneEscapeAppData%
 }
 
 TempFilesHelp() {
@@ -50,10 +59,8 @@ TempFilesHelp() {
 LaunchRunescape() {
 	Gui Destroy
 
-	passwordLocation := A_MyDocuments
-	StringReplace, passwordLocation, passwordLocation, \, /, All
-	passwordLocation .= "/RSCustom"
-	FileRead password, %passwordLocation%
+	IniRead varSavedUserPassword, %iniLocation%, UserSettings, Password
+	FileRead password, %varSavedUserPassword%
 
 	location := A_MyDocuments
 	StringReplace, location, location, \, /, All
@@ -64,18 +71,18 @@ LaunchRunescape() {
 	deterministicallyFind([MOUSELOCATION, MOUSELOCATION], ["TitleIndicator"])
 	WinMaximize RuneScape
 
-	StringLen length, password
+	StringLen length, varSavedUserPassword
 	if length > 0
 	{
 		Sleep 1000
-		Send %password%
+		Send %varSavedUserPassword%
 		Sleep 500
 		Send {Enter}
 	}
 }
 
 LaunchRunescapeHelp() {
-	MsgBox Username should already be entered`n`nCustom password should be cleartext located:`n`tC:/Users/Username/Documents/RSCustom`n`nNo password will be entered if file does not exist
+	MsgBox Username should already be entered`n`nEnter password in text box below for autologin
 }
 
 ParentDirectory(n) {

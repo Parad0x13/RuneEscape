@@ -10,7 +10,7 @@ findImage(x, y, image, strength) {
 	Loop %strength% {
 		MouseMove x, y, 3
 
-		image_loc := A_AppData . "/RuneEscape/" . image . ".png"
+		image_loc := RuneEscapeAppData . image . ".png"
 		IfNotExist %image_loc%
 		{
 			ToolTip
